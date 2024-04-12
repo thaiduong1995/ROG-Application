@@ -1,5 +1,6 @@
 package com.duong.mytheme.base
 
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
@@ -15,6 +16,13 @@ import kotlinx.coroutines.launch
 abstract class BaseFragment: Fragment() {
 
     abstract val viewModel: BaseViewModel
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        fetchData(context)
+    }
+
+    open fun fetchData(context: Context) {}
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
