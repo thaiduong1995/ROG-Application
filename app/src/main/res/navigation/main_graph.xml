@@ -11,7 +11,13 @@
         android:label="PreviewFragment" >
         <action
             android:id="@+id/actionPreviewToMain"
-            app:destination="@id/mainFragment" />
+            app:destination="@id/mainFragment"
+            app:enterAnim="@anim/from_right"
+            app:exitAnim="@anim/to_left"
+            app:popEnterAnim="@anim/from_left"
+            app:popExitAnim="@anim/to_right"
+            app:popUpToInclusive="true"
+            app:popUpTo="@id/previewFragment"/>
     </fragment>
 
     <fragment

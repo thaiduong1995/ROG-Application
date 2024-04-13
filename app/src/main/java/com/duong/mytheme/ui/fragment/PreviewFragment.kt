@@ -15,9 +15,17 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.duong.mytheme.base.BaseFragment
+import com.duong.mytheme.data.reponse.NavigationCommand
 import com.duong.mytheme.databinding.FragmentPreviewBinding
+import com.duong.mytheme.extension.hideStatusBar
+import com.duong.mytheme.extension.showStatusBar
 import com.duong.mytheme.vm.PreviewViewModel
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 
 class PreviewFragment : BaseFragment() {
@@ -46,38 +54,11 @@ class PreviewFragment : BaseFragment() {
     }
 
     override fun initUi() {
-        activity?.window?.apply {
-            when {
-                Build.VERSION.SDK_INT in 21..29 -> {
-                    setFlags(
-                        WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-                        WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-                    )
-                }
+        activity?.hideStatusBar()
+    }
 
-                Build.VERSION.SDK_INT >= 30 -> {
-                    val windowInsetsController =
-                        WindowCompat.getInsetsController(this, this.decorView)
-                    // Configure the behavior of the hidden system bars.
-                    windowInsetsController.systemBarsBehavior =
-                        WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-
-                    // Add a listener to update the behavior of the toggle fullscreen button when
-                    // the system bars are hidden or revealed.
-                    decorView.setOnApplyWindowInsetsListener { view, windowInsets ->
-                        // You can hide the caption bar even when the other system bars are visible.
-                        // To account for this, explicitly check the visibility of navigationBars()
-                        // and statusBars() rather than checking the visibility of systemBars().
-                        if (windowInsets.isVisible(WindowInsetsCompat.Type.navigationBars())
-                            || windowInsets.isVisible(WindowInsetsCompat.Type.statusBars())
-                        ) {
-                            // Hide both the status bar and the navigation bar.
-                            windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
-                        }
-                        view.onApplyWindowInsets(windowInsets)
-                    }
-                }
-            }
-        }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        activity?.showStatusBar()
     }
 }

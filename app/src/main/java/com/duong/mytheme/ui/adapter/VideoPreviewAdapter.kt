@@ -29,6 +29,7 @@ class VideoPreviewAdapter : RecyclerView.Adapter<VideoPreviewAdapter.ViewHolder>
             binding.apply {
                 with(imgThumb) {
                     Glide.with(context).load(item.path).error(R.drawable.logo).into(this)
+                    clipToOutline = true
                 }
 
                 root.setOnClickListener {

@@ -84,8 +84,8 @@ class MainFragment : BaseFragment() {
         binding.rcvVideo.apply {
             adapter = videoPreviewAdapter
             addItemDecoration(
-                resources.getDimensionPixelOffset(R.dimen.size_10),
-                resources.getDimensionPixelOffset(R.dimen.size_10)
+                resources.getDimensionPixelOffset(R.dimen.size_5),
+                resources.getDimensionPixelOffset(R.dimen.size_5)
             )
         }
     }
