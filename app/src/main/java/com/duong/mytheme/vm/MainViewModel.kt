@@ -4,6 +4,7 @@ import android.content.Context
 import android.provider.MediaStore
 import androidx.lifecycle.viewModelScope
 import com.duong.mytheme.base.BaseViewModel
+import com.duong.mytheme.data.database.MyThemeRepository
 import com.duong.mytheme.data.model.Video
 import com.duong.mytheme.data.reponse.VideoState
 import com.duong.mytheme.extension.getStringValueOrNull
@@ -18,11 +19,18 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val repository: MyThemeRepository
 ) : BaseViewModel() {
 
     private val _listVideoFlow: MutableStateFlow<VideoState> = MutableStateFlow(VideoState.IDLE)
     val listVideoFlow: StateFlow<VideoState> = _listVideoFlow
+
+    fun removePreview() {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.removePreview()
+        }
+    }
 
     fun providerListAllVideo() {
         viewModelScope.launch(Dispatchers.IO) {

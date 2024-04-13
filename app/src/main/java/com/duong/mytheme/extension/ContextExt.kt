@@ -2,6 +2,9 @@ package com.duong.mytheme.extension
 
 import android.content.Context
 import android.util.TypedValue
+import androidx.datastore.preferences.preferencesDataStore
+
+val Context.dataStore by preferencesDataStore(name = "DATA_STORE")
 
 fun Context.dpToPx(value: Int): Int {
     val metrics = this.resources.displayMetrics

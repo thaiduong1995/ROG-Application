@@ -2,15 +2,12 @@ package com.duong.mytheme.ui.fragment
 
 import android.Manifest
 import android.content.Context
-import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
@@ -19,7 +16,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.duong.mytheme.R
 import com.duong.mytheme.base.BaseFragment
-import com.duong.mytheme.base.BaseViewModel
 import com.duong.mytheme.data.reponse.VideoState
 import com.duong.mytheme.databinding.FragmentMainBinding
 import com.duong.mytheme.extension.showSnackBar
@@ -27,7 +23,6 @@ import com.duong.mytheme.service.VideoLiveWallpaperService
 import com.duong.mytheme.ui.adapter.VideoPreviewAdapter
 import com.duong.mytheme.utls.rcv.addItemDecoration
 import com.duong.mytheme.vm.MainViewModel
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class MainFragment : BaseFragment() {
@@ -48,6 +43,7 @@ class MainFragment : BaseFragment() {
     override fun fetchData(context: Context) {
         super.fetchData(context)
         requestPermission()
+        viewModel.removePreview()
     }
 
     override fun initData() {

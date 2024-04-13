@@ -63,6 +63,7 @@ dependencies {
     implementation(libs.navigation.fragment.ktx)
     implementation(libs.navigation.ui.ktx)
 
+    implementation(libs.dataStore)
     implementation(libs.glide)
     implementation(libs.lottie)
 }

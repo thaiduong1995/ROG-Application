@@ -1,25 +1,15 @@
 package com.duong.mytheme.ui.fragment
 
 import android.content.Context
-import android.media.MediaPlayer
-import android.media.MediaPlayer.OnPreparedListener
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.SurfaceHolder
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
-import android.widget.MediaController
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.duong.mytheme.base.BaseFragment
-import com.duong.mytheme.data.reponse.NavigationCommand
 import com.duong.mytheme.databinding.FragmentPreviewBinding
 import com.duong.mytheme.extension.hideStatusBar
 import com.duong.mytheme.extension.showStatusBar
@@ -44,12 +34,28 @@ class PreviewFragment : BaseFragment() {
 
     override fun initData() {
         super.initData()
-        binding.videoPreview.apply {
-            setVideoPath("content://com.duong.mytheme/video_preview.mp4")
-            start()
-            setOnCompletionListener {
-                viewModel.goToMain()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
+                launch {
+                    viewModel.isFirstTimeFlow.collect {
+                        observeIsFirstTime(it)
+                    }
+                }
             }
+        }
+    }
+
+    private fun observeIsFirstTime(isFirstTime: Boolean) {
+        if (isFirstTime) {
+            binding.videoPreview.apply {
+                setVideoPath("content://com.duong.mytheme/video_preview.mp4")
+                start()
+                setOnCompletionListener {
+                    viewModel.goToMain()
+                }
+            }
+        } else {
+            viewModel.goToMain()
         }
     }
 
