@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/previewFragment"
-        android:name="com.duong.mytheme.ui.fragment.PreviewFragment"
+        android:name="com.duong.my_app.ui.fragment.PreviewFragment"
         android:label="PreviewFragment" >
         <action
             android:id="@+id/actionPreviewToMain"
@@ -22,7 +22,7 @@
 
     <fragment
         android:id="@+id/mainFragment"
-        android:name="com.duong.mytheme.ui.fragment.MainFragment"
+        android:name="com.duong.my_app.ui.fragment.MainFragment"
         android:label="fragment_main"
         tools:layout="@layout/fragment_main" />
 </navigation>

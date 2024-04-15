@@ -5,27 +5,30 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/viewPager"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rcvVideo"
         android:layout_width="@dimen/size_0"
         android:layout_height="@dimen/size_0"
-        app:layout_constraintBottom_toTopOf="@id/bottomNavView"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:spanCount="3"
+        tools:listitem="@layout/item_video_preview" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnRequest"
         android:layout_width="@dimen/size_0"
         android:layout_height="@dimen/size_0"
+        android:background="@drawable/bg_btn"
         android:gravity="center"
         android:includeFontPadding="false"
         android:lines="1"
-        android:visibility="gone"
-        android:background="@drawable/bg_btn"
         android:paddingHorizontal="@dimen/size_5"
-        android:textColor="@color/bg_btn"
         android:text="@string/click_request_permission"
+        android:textColor="@color/bg_btn"
+        android:visibility="gone"
         app:autoSizeMaxTextSize="@dimen/text_size_20"
         app:autoSizeMinTextSize="@dimen/text_size_1"
         app:autoSizeTextType="uniform"
@@ -36,18 +39,11 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintWidth_percent="0.5" />
 
-    <com.duong.my_app.ui.custom.bottombar.BottomNavigation
-        android:id="@+id/bottomNavView"
-        android:layout_width="@dimen/size_0"
-        android:layout_height="@dimen/size_70"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/loading"
         android:layout_width="@dimen/size_0"
         android:layout_height="@dimen/size_0"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent"
@@ -55,7 +51,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintWidth_percent="0.3"
         app:lottie_autoPlay="true"
-        android:visibility="gone"
         app:lottie_fileName="loading.json"
         app:lottie_loop="true" />
 

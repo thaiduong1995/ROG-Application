@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "com.duong.mytheme"
+    namespace = "com.duong.my_app"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.duong.mytheme"
+        applicationId = "com.duong.my_app"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -62,6 +62,9 @@ dependencies {
 
     implementation(libs.navigation.fragment.ktx)
     implementation(libs.navigation.ui.ktx)
+
+    implementation(libs.room.compiler)
+    implementation(libs.room)
 
     implementation(libs.dataStore)
     implementation(libs.glide)

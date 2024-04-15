@@ -1,7 +1,16 @@
 <resources>
-    <string name="app_name">My Theme</string>
+    <string name="app_name">My App</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="request_permission">Click here to re-authorize</string>
+    <string name="request_permission">
+        This app needs you to allow this permission in order to function.Will you allow it
+    </string>
+    <string name="click_request_permission">Click here to re-authorize</string>
     <string name="common_error">An error occurred, please check again</string>
+    <string name="app_manager">App Manager</string>
+    <string name="category">Security</string>
+    <string name="theme">Theme</string>
+    <string name="setting">Settings</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>
