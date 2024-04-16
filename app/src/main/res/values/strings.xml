@@ -13,4 +13,9 @@
     <string name="setting">Settings</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="search_app">Search App</string>
+    <string name="folder">Folder</string>
+    <string name="create_folder">Create Folder</string>
+    <string name="set_name">Set name...</string>
+    <string name="ok">Ok</string>
 </resources>

@@ -15,6 +15,8 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 abstract class BaseFragment : Fragment() {
 
+    val TAG = this::class.simpleName
+
     abstract val viewModel: BaseViewModel
 
     override fun onAttach(context: Context) {

@@ -1,14 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.fragment.AppManagerFragment">
+    android:layout_height="match_parent">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutSearch"
+        android:layout_width="@dimen/size_0"
+        android:background="@drawable/bg_stroke_green_radius_20"
+        android:layout_height="@dimen/size_0"
+        android:layout_marginTop="@dimen/size_20"
+        app:layout_constraintDimensionRatio="272:40"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.85">
 
-</FrameLayout>
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imgSearch"
+            android:layout_width="@dimen/size_0"
+            android:layout_height="@dimen/size_0"
+            android:layout_marginStart="@dimen/size_18"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent="0.09"
+            app:srcCompat="@drawable/ic_search" />
+
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/edtSearch"
+            android:layout_width="@dimen/size_0"
+            android:layout_height="@dimen/size_0"
+            android:background="@android:color/transparent"
+            android:gravity="start|center_vertical"
+            android:hint="@string/search_app"
+            app:queryBackground="@android:color/transparent"
+            android:layout_marginVertical="@dimen/size_1"
+            android:layout_marginEnd="@dimen/size_20"
+            android:inputType="text"
+            android:singleLine="true"
+            android:textColor="@color/grayC4CDE2"
+            android:textColorHint="@color/grayA3A3A3"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/imgSearch"
+            app:layout_constraintTop_toTopOf="parent"
+            app:searchIcon="@null"
+            app:iconifiedByDefault="false" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rcvApp"
+        android:layout_width="@dimen/size_0"
+        android:layout_height="@dimen/size_0"
+        android:clipToPadding="false"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/layoutSearch"
+        app:layout_constraintStart_toStartOf="@id/layoutSearch"
+        app:layout_constraintTop_toBottomOf="@id/layoutSearch"
+        tools:listitem="@layout/item_app" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnRequest"
+        android:layout_width="@dimen/size_0"
+        android:layout_height="@dimen/size_0"
+        android:background="@drawable/bg_btn"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:lines="1"
+        android:paddingHorizontal="@dimen/size_5"
+        android:text="@string/click_request_permission"
+        android:textColor="@color/bg_btn"
+        android:visibility="gone"
+        app:autoSizeMaxTextSize="@dimen/text_size_20"
+        app:autoSizeMinTextSize="@dimen/text_size_1"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="4:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.5" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/progressBar"
+        android:layout_width="@dimen/size_100"
+        android:layout_height="@dimen/size_100"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_fileName="loading.json" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

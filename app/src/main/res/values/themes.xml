@@ -10,4 +10,9 @@
         <item name="android:includeFontPadding">false</item>
         <item name="android:gravity">center</item>
     </style>
+
+    <style name="RoundedCornersDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="dialogCornerRadius">@dimen/size_10</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
 </resources>

@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -38,6 +39,7 @@ class ThemeFragment : BaseFragment() {
 
     private lateinit var binding: FragmentThemeBinding
     private val videoPreviewAdapter = VideoPreviewAdapter()
+    private var alertDialog: AlertDialog? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,6 +60,21 @@ class ThemeFragment : BaseFragment() {
                 }
             }
         }
+    }
+
+    override fun fetchData(context: Context) {
+        super.fetchData(context)
+        alertDialog = AlertDialog.Builder(context)
+            .setMessage(getString(R.string.request_permission))
+            .setPositiveButton(getString(R.string.yes)) { _, _ ->
+                openAppSettings()
+            }
+            .setNegativeButton(getString(R.string.no)) { dialog, _ ->
+                binding.btnRequest.isVisible = true
+                dialog.dismiss()
+            }
+            .setCancelable(false)
+            .create()
     }
 
     private fun observeListVideo(videoState: VideoState) {
@@ -121,32 +138,18 @@ class ThemeFragment : BaseFragment() {
         }
     }
 
-    private fun showPermissionDialog() {
-        activity?.let { act ->
-            AlertDialog.Builder(act)
-                .setMessage(getString(R.string.request_permission))
-                .setPositiveButton(getString(R.string.yes)) { _, _ ->
-                    openAppSettings()
-                }
-                .setNegativeButton(getString(R.string.no)) { dialog, _ ->
-                    binding.btnRequest.isVisible = true
-                    dialog.dismiss()
-                }
-                .setCancelable(false)
-                .create()
-                .show()
-        }
-    }
-
     private val requestPermission =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
                 binding.btnRequest.isGone = true
+                if (alertDialog?.isShowing == true) {
+                    alertDialog?.dismiss()
+                }
                 viewModel.providerListAllVideo()
             } else {
                 binding.btnRequest.isVisible = true
                 if (!shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                    showPermissionDialog()
+                    alertDialog?.show()
                 }
             }
         }

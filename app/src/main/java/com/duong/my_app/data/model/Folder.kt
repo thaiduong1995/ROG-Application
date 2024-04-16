@@ -8,8 +8,8 @@ import androidx.annotation.Keep
  * Email: nguyenhunghung2806@gmail.com
  */
 @Keep
-data class AppData(
-    var appName : String = "",
-    var packageName : String = "",
-    var size: String = ""
+data class Folder(
+    var name : String = "",
+    var path : String = "",
+    var size: Int = 0
 )

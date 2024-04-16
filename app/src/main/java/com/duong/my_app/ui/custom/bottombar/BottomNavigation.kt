@@ -72,6 +72,17 @@ class BottomNavigation @JvmOverloads constructor(
             bottomItemLayouts.add(this)
         }
 
+        binding.tabFolder.apply {
+            setBottomItem(
+                BottomItem(
+                    icon = R.drawable.ic_folder,
+                    title = context.getString(R.string.folder)
+                )
+            )
+            setTabPosition(bottomItemLayouts.size)
+            bottomItemLayouts.add(this)
+        }
+
         setupWithViewpager()
     }
 

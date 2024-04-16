@@ -14,20 +14,20 @@
         app:layout_constraintEnd_toStartOf="@id/tvName"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintWidth_percent="0.18" />
+        app:layout_constraintWidth_percent="0.15" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvName"
         android:layout_width="@dimen/size_0"
         android:layout_height="@dimen/size_0"
         android:layout_marginHorizontal="@dimen/size_10"
+        android:ellipsize="end"
         android:gravity="start|center_vertical"
         app:autoSizeMaxTextSize="@dimen/text_size_20"
         app:autoSizeMinTextSize="@dimen/text_size_1"
         app:autoSizeTextType="uniform"
-        android:ellipsize="end"
         app:layout_constraintBottom_toTopOf="@id/tvSize"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/imgAdd"
         app:layout_constraintStart_toEndOf="@id/imgThumb"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -45,5 +45,16 @@
         app:layout_constraintEnd_toEndOf="@id/tvName"
         app:layout_constraintStart_toStartOf="@id/tvName"
         app:layout_constraintTop_toBottomOf="@id/tvName" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/imgAdd"
+        android:layout_width="@dimen/size_0"
+        android:layout_height="@dimen/size_0"
+        android:src="@drawable/ic_plus"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.1" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

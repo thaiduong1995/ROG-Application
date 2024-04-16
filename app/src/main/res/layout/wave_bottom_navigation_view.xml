@@ -19,8 +19,17 @@
         android:layout_width="@dimen/size_0"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/tabFolder"
         app:layout_constraintStart_toEndOf="@id/tabTheme"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.duong.my_app.ui.custom.bottombar.BottomItemLayout
+        android:id="@+id/tabFolder"
+        android:layout_width="@dimen/size_0"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/tabAppManager"
         app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

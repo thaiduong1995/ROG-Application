@@ -37,6 +37,7 @@ class MainFragment : BaseFragment() {
         val viewPager = ViewPagerAdapter(childFragmentManager, lifecycle).apply {
             addFragment(ThemeFragment.newInstance(), getString(R.string.theme))
             addFragment(AppManagerFragment.newInstance(), getString(R.string.app_manager))
+            addFragment(FolderFragment.newInstance(), getString(R.string.folder))
         }
         binding.viewPager.apply {
             isUserInputEnabled = false

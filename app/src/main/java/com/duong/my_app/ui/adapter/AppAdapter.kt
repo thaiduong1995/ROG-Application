@@ -1,19 +1,26 @@
 package com.duong.my_app.ui.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.duong.my_app.data.model.AppData
 import com.duong.my_app.databinding.ItemAppBinding
 
-class AppAdapter : RecyclerView.Adapter<AppAdapter.ViewHolder>() {
+class AppAdapter : RecyclerView.Adapter<AppAdapter.ViewHolder>(), Filterable {
 
-    private val listApp = mutableListOf<AppData>()
+    private val listApp = mutableListOf<AppData?>()
+    private val listDefault by lazy { mutableListOf<AppData?>() }
     var onClickItemListener: ((AppData, Int) -> Unit)? = null
 
     fun setData(listApp: List<AppData>) {
         this.listApp.apply {
+            clear()
+            addAll(listApp)
+        }
+        this.listDefault.apply {
             clear()
             addAll(listApp)
         }
@@ -26,12 +33,13 @@ class AppAdapter : RecyclerView.Adapter<AppAdapter.ViewHolder>() {
 
         fun onBind(item: AppData, position: Int) {
             binding.apply {
-                with(imgThumb) {
-                    Glide.with(context)
-                        .load("pkg:${item.packageName}")
-                        .into(this)
+                imgThumb.apply {
+                    val icon = context.packageManager.getApplicationIcon(item.packageName)
+                    setImageDrawable(icon)
                     clipToOutline = true
                 }
+                tvName.text = item.appName
+                tvSize.text = item.size
 
                 root.setOnClickListener {
                     onClickItemListener?.invoke(item, position)
@@ -60,6 +68,47 @@ class AppAdapter : RecyclerView.Adapter<AppAdapter.ViewHolder>() {
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         listApp.getOrNull(position)?.let {
             holder.onBind(it, position)
+        }
+    }
+
+    override fun getFilter(): Filter = object : Filter() {
+
+        override fun performFiltering(constraint: CharSequence?): FilterResults {
+            val listTemp = mutableListOf<AppData?>()
+            constraint?.toString()?.let { charString ->
+                if (charString.isEmpty()) {
+                    listTemp.addAll(listDefault)
+                } else {
+                    val filteredList = mutableListOf<AppData?>()
+                    for (app in listDefault) {
+                        if (app?.appName?.lowercase()?.trim()
+                                ?.contains(charString.lowercase().trim()) == true
+                        ) {
+                            filteredList.add(app)
+                        }
+                    }
+                    listTemp.addAll(filteredList)
+                }
+            }
+            val results = FilterResults()
+            results.count = listTemp.size
+            results.values = listTemp
+            return results
+        }
+
+        @Suppress("UNCHECKED_CAST")
+        override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+            try {
+                (results?.values as? List<AppData?>)?.let { list ->
+                    listApp.apply {
+                        clear()
+                        addAll(list)
+                    }
+                    notifyDataSetChanged()
+                }
+            } catch (ex: Exception) {
+
+            }
         }
     }
 }
