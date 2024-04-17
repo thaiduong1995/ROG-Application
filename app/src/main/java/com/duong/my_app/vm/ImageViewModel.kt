@@ -1,13 +1,18 @@
 package com.duong.my_app.vm
 
 import android.content.Context
+import android.database.Cursor
+import android.net.Uri
 import android.provider.MediaStore
+import android.util.Log
+
 import androidx.lifecycle.viewModelScope
 import com.duong.my_app.base.BaseViewModel
 import com.duong.my_app.data.database.MyThemeRepository
-import com.duong.my_app.data.model.Video
-import com.duong.my_app.data.reponse.VideoState
-import com.duong.my_app.extension.getStringValueOrNull
+import com.duong.my_app.data.model.Image
+import com.duong.my_app.data.reponse.ImageState
+import com.duong.my_app.extension.getRealPathFromURI
+
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -15,6 +20,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.io.File
+
 import javax.inject.Inject
 
 @HiltViewModel
@@ -23,43 +29,59 @@ class ImageViewModel @Inject constructor(
     private val repository: MyThemeRepository
 ) : BaseViewModel() {
 
-    private val _listVideoFlow: MutableStateFlow<VideoState> = MutableStateFlow(VideoState.IDLE)
-    val listVideoFlow: StateFlow<VideoState> = _listVideoFlow
+    private val _listImageFlow: MutableStateFlow<ImageState> = MutableStateFlow(ImageState.IDLE)
+    val listImageFlow: StateFlow<ImageState> = _listImageFlow
 
-    fun removePreview() {
+    fun providerListAllImage() {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.removePreview()
-        }
-    }
+            _listImageFlow.value = ImageState.Loading
+            val listOfAllImages = mutableListOf<Image>()
+            val uri: Uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+            val projection = arrayOf(MediaStore.MediaColumns.DATA, MediaStore.Images.Media.BUCKET_DISPLAY_NAME)
 
-    fun providerListAllVideo() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val listVideo = mutableListOf<Video>()
-            _listVideoFlow.value = VideoState.Loading
-            val uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
             try {
-                val sel =
-                    "${MediaStore.Video.Media.DURATION}> '0' AND ${MediaStore.Video.Media.SIZE}> '0'"
-                context.contentResolver.query(uri, null, sel, null, null)?.let { cursor ->
-                    //looping through all rows and adding to list
-                    if (cursor.count > 0) {
-                        if (cursor.moveToFirst()) {
-                            do {
-                                val data =
-                                    cursor.getStringValueOrNull(MediaStore.Video.Media.DATA) ?: ""
-                                if (File(data).exists()) {
-                                    listVideo.add(Video(path = data))
-                                }
-                            } while (cursor.moveToNext())
-                            cursor.close()
+                context.contentResolver.query(uri, projection, null, null, null)?.let { cursor ->
+                    val columnIndexData = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA)
+                    while (cursor.moveToNext()) {
+                        cursor.getString(columnIndexData)?.let { absolutePathOfImage ->
+                            listOfAllImages.add(Image(name = File(absolutePathOfImage).name, path = absolutePathOfImage))
                         }
                     }
-                    _listVideoFlow.value = VideoState.Success(listVideo = listVideo)
+                    cursor.close()
+                    _listImageFlow.value = ImageState.Success(listImage = listOfAllImages)
                 }
-            } catch (e: Exception) {
-                _listVideoFlow.value = VideoState.Error(message = e.message.toString())
+
+            } catch (ex: Exception) {
+                _listImageFlow.value = ImageState.Error(message = ex.message.toString())
             }
         }
     }
 
+    fun getAllShownImagesPath() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _listImageFlow.value = ImageState.Loading
+            val uriExternal: Uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+            val cursor: Cursor?
+            val columnIndexID: Int
+            val listOfAllImages: MutableList<Image> = mutableListOf()
+            val projection = arrayOf(MediaStore.Images.Media._ID)
+            var imageId: Long
+            cursor = context.contentResolver.query(uriExternal, projection, null, null, null)
+            if (cursor != null) {
+                columnIndexID = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID)
+                while (cursor.moveToNext()) {
+                    imageId = cursor.getLong(columnIndexID)
+                    val uriImage = Uri.withAppendedPath(uriExternal, "" + imageId)
+                    Log.d("uriImage", "$uriImage")
+                    getRealPathFromURI(context, uriImage)?.let {
+                        listOfAllImages.add(
+                            Image(name = File(it).name, path = it)
+                        )
+                    }
+                }
+                cursor.close()
+            }
+            _listImageFlow.value = ImageState.Success(listOfAllImages)
+        }
+    }
 }

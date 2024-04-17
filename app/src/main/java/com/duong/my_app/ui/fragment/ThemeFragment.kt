@@ -2,18 +2,12 @@ package com.duong.my_app.ui.fragment
 
 import android.Manifest
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
@@ -23,7 +17,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.duong.my_app.R
 import com.duong.my_app.base.BaseFragment
-import com.duong.my_app.base.BaseViewModel
 import com.duong.my_app.data.reponse.VideoState
 import com.duong.my_app.databinding.FragmentThemeBinding
 import com.duong.my_app.extension.showSnackBar
@@ -39,7 +32,6 @@ class ThemeFragment : BaseFragment() {
 
     private lateinit var binding: FragmentThemeBinding
     private val videoPreviewAdapter = VideoPreviewAdapter()
-    private var alertDialog: AlertDialog? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -60,21 +52,6 @@ class ThemeFragment : BaseFragment() {
                 }
             }
         }
-    }
-
-    override fun fetchData(context: Context) {
-        super.fetchData(context)
-        alertDialog = AlertDialog.Builder(context)
-            .setMessage(getString(R.string.request_permission))
-            .setPositiveButton(getString(R.string.yes)) { _, _ ->
-                openAppSettings()
-            }
-            .setNegativeButton(getString(R.string.no)) { dialog, _ ->
-                binding.btnRequest.isVisible = true
-                dialog.dismiss()
-            }
-            .setCancelable(false)
-            .create()
     }
 
     private fun observeListVideo(videoState: VideoState) {
@@ -128,6 +105,11 @@ class ThemeFragment : BaseFragment() {
         requestPermission()
     }
 
+    override fun onDismissPermissionDialog() {
+        super.onDismissPermissionDialog()
+        binding.btnRequest.isVisible = true
+    }
+
     private fun requestPermission() {
         activity?.let { act ->
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
@@ -148,22 +130,17 @@ class ThemeFragment : BaseFragment() {
                 viewModel.providerListAllVideo()
             } else {
                 binding.btnRequest.isVisible = true
-                if (!shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                    alertDialog?.show()
+                when {
+                    Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU && !shouldShowRequestPermissionRationale(
+                        Manifest.permission.READ_EXTERNAL_STORAGE
+                    ) -> alertDialog?.show()
+
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !shouldShowRequestPermissionRationale(
+                        Manifest.permission.READ_MEDIA_VIDEO
+                    ) -> alertDialog?.show()
                 }
             }
         }
-
-    private fun openAppSettings() {
-        context?.let { ct ->
-            val packageUri = Uri.fromParts("package", ct.applicationContext.packageName, null)
-            val applicationDetailsSettingsIntent = Intent()
-            applicationDetailsSettingsIntent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-            applicationDetailsSettingsIntent.setData(packageUri)
-            applicationDetailsSettingsIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            ct.applicationContext.startActivity(applicationDetailsSettingsIntent)
-        }
-    }
 
     companion object {
 

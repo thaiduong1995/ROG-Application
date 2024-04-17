@@ -1,15 +1,15 @@
 package com.duong.my_app.vm
 
 import android.content.Context
-import android.provider.MediaStore
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.duong.my_app.base.BaseViewModel
 import com.duong.my_app.data.database.MyThemeRepository
 import com.duong.my_app.data.model.Folder
-import com.duong.my_app.data.model.Video
-import com.duong.my_app.data.reponse.VideoState
-import com.duong.my_app.extension.getStringValueOrNull
+import com.duong.my_app.data.model.Image
+import com.duong.my_app.data.reponse.ImageState
+import com.duong.my_app.extension.move
+import com.duong.my_app.ui.fragment.MainFragmentDirections
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -17,6 +17,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,9 +26,15 @@ class FolderViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val repository: MyThemeRepository
 ) : BaseViewModel() {
-    
+
     private val _listFolderFlow: MutableStateFlow<List<Folder>> = MutableStateFlow(listOf())
     val listFolderFlow: StateFlow<List<Folder>> = _listFolderFlow
+
+    private val _folderFlow: MutableStateFlow<Folder?> = MutableStateFlow(null)
+    val folderFlow: StateFlow<Folder?> = _folderFlow
+
+    private val _listImageFlow: MutableStateFlow<ImageState> = MutableStateFlow(ImageState.IDLE)
+    val listImageFlow: StateFlow<ImageState> = _listImageFlow
 
     fun providerAllHiddenFolder() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -52,47 +60,27 @@ class FolderViewModel @Inject constructor(
             if (!folder.exists()) {
                 folder.mkdir()
                 File(folder.name, ".nomedia").mkdir()
+                _folderFlow.value = Folder(name = folderName, path = folder.absolutePath)
             }
         }
     }
 
-    private val _listVideoFlow: MutableStateFlow<VideoState> = MutableStateFlow(VideoState.IDLE)
-    val listVideoFlow: StateFlow<VideoState> = _listVideoFlow
-
-    fun removePreview() {
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.removePreview()
-        }
+    fun goToImageFolder() {
+        navigate(MainFragmentDirections.actionMainToImage())
     }
 
-    fun providerListAllVideo() {
+    fun moveImage(folder: Folder, listImage: List<Image>) {
         viewModelScope.launch(Dispatchers.IO) {
-            val listVideo = mutableListOf<Video>()
-            _listVideoFlow.value = VideoState.Loading
-            val uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
-            try {
-                val sel =
-                    "${MediaStore.Video.Media.DURATION}> '0' AND ${MediaStore.Video.Media.SIZE}> '0'"
-                context.contentResolver.query(uri, null, sel, null, null)?.let { cursor ->
-                    //looping through all rows and adding to list
-                    if (cursor.count > 0) {
-                        if (cursor.moveToFirst()) {
-                            do {
-                                val data =
-                                    cursor.getStringValueOrNull(MediaStore.Video.Media.DATA) ?: ""
-                                if (File(data).exists()) {
-                                    listVideo.add(Video(path = data))
-                                }
-                            } while (cursor.moveToNext())
-                            cursor.close()
-                        }
-                    }
-                    _listVideoFlow.value = VideoState.Success(listVideo = listVideo)
+            _listImageFlow.value = ImageState.Loading
+            val list = mutableListOf<Image>()
+            listImage.forEach { image ->
+                val temp = File(File(folder.path), image.name)
+                if (temp.mkdir()) {
+                    File(image.path).move(temp)
+                    list.add(image)
                 }
-            } catch (e: Exception) {
-                _listVideoFlow.value = VideoState.Error(message = e.message.toString())
             }
+            _listImageFlow.value = ImageState.Success(list)
         }
     }
-
 }

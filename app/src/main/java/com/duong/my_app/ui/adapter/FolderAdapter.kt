@@ -26,6 +26,17 @@ class FolderAdapter : RecyclerView.Adapter<FolderAdapter.ViewHolder>() {
         notifyDataSetChanged()
     }
 
+    fun insertItem(folder: Folder) {
+        listFolder.add(folder)
+        notifyItemInserted(listFolder.size)
+        notifyItemChanged(listFolder.size)
+    }
+
+    fun updateItem(position: Int, size: Int) {
+        listFolder.getOrNull(position)?.size = size
+        notifyItemChanged(position)
+    }
+
     inner class ViewHolder(
         private val binding: ItemFolderBinding
     ) : RecyclerView.ViewHolder(binding.root) {
