@@ -111,12 +111,10 @@ class ThemeFragment : BaseFragment() {
     }
 
     private fun requestPermission() {
-        activity?.let { act ->
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-                requestPermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
-            } else {
-                requestPermission.launch(Manifest.permission.READ_MEDIA_VIDEO)
-            }
+        when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE -> requestPermission.launch(Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED)
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> requestPermission.launch(Manifest.permission.READ_MEDIA_VIDEO)
+            else -> requestPermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
         }
     }
 
@@ -131,12 +129,16 @@ class ThemeFragment : BaseFragment() {
             } else {
                 binding.btnRequest.isVisible = true
                 when {
-                    Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU && !shouldShowRequestPermissionRationale(
-                        Manifest.permission.READ_EXTERNAL_STORAGE
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE && !shouldShowRequestPermissionRationale(
+                        Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
                     ) -> alertDialog?.show()
 
                     Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !shouldShowRequestPermissionRationale(
                         Manifest.permission.READ_MEDIA_VIDEO
+                    ) -> alertDialog?.show()
+
+                    Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU && !shouldShowRequestPermissionRationale(
+                        Manifest.permission.READ_EXTERNAL_STORAGE
                     ) -> alertDialog?.show()
                 }
             }

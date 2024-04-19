@@ -109,6 +109,7 @@ class AppManagerViewModel @Inject constructor(
                             ).toString(),
                             size = size.readableFileSize()
                         )
+                        Log.d("AppManagerViewModel", "$appData")
                         if (resolveInfo.activityInfo.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM == 0) {
                             appDataList.add(appData)
                         }
@@ -123,6 +124,10 @@ class AppManagerViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             repository.removePreview()
         }
+    }
+
+    companion object {
+        private var TAG = this::class.simpleName
     }
 
 }

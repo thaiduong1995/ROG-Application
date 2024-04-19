@@ -1,18 +1,24 @@
 package com.duong.my_app.ui.fragment
 
 import android.Manifest
+import android.R.attr.path
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.MimeTypeMap
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -27,17 +33,20 @@ import com.duong.my_app.ui.adapter.FolderAdapter
 import com.duong.my_app.ui.dialog.SetNameDialog
 import com.duong.my_app.utls.rcv.addItemDecoration
 import com.duong.my_app.vm.FolderViewModel
+import com.duong.my_app.vm.ShareViewModel
 import kotlinx.coroutines.launch
+import java.io.File
+
 
 class FolderFragment : BaseFragment() {
 
     override val viewModel by viewModels<FolderViewModel>()
 
     private lateinit var binding: FragmentFolderBinding
+    private val shareViewModel by activityViewModels<ShareViewModel>()
     private val folderAdapter = FolderAdapter()
     private var folder: Folder? = null
     private var position = -1
-    private var isGoToImageFolder = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,8 +58,9 @@ class FolderFragment : BaseFragment() {
 
     override fun fetchData(context: Context) {
         super.fetchData(context)
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU && ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            viewModel.providerAllHiddenFolder()
+        when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> viewModel.providerAllHiddenFolder()
+            ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED -> viewModel.providerAllHiddenFolder()
         }
     }
 
@@ -69,13 +79,13 @@ class FolderFragment : BaseFragment() {
                     }
                 }
                 launch {
-                    viewModel.listImageSelectedFlow.collect {
-                        observeListImageSelected(it)
+                    viewModel.listImageFlow.collect {
+                        observeListImage(it)
                     }
                 }
                 launch {
-                    viewModel.listImageFlow.collect {
-                        observeListImage(it)
+                    shareViewModel.listImageSelectedFlow.collect {
+                        observeListImageSelected(it)
                     }
                 }
             }
@@ -93,6 +103,7 @@ class FolderFragment : BaseFragment() {
     private fun observeListImageSelected(listImage: List<Image>) {
         folder?.let {
             viewModel.moveImage(folder = it, listImage = listImage)
+            folderAdapter.updateItem(position = position, size = listImage.size)
         }
     }
 
@@ -125,13 +136,32 @@ class FolderFragment : BaseFragment() {
             onAddItemListener = { folder, position ->
                 this@FolderFragment.folder = folder
                 this@FolderFragment.position = position
-                isGoToImageFolder = true
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     requestPermission.launch(Manifest.permission.READ_MEDIA_IMAGES)
                 } else requestPermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
             }
             onClickItemListener = { folder, position ->
+                val intent = Intent(Intent.ACTION_GET_CONTENT)
+                val uri = Uri.parse(
+                    Environment.getExternalStorageState(File(folder.path))
+                            + File.separator + ".${folder.name}" + File.separator
+                )
+                intent.setDataAndType(uri,"application/*") // or application/*
+                startActivity(Intent.createChooser(intent, "Open folder"))
 
+                val file: File = File(path)
+                val uri_path = Uri.fromFile(file)
+                val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(
+                    MimeTypeMap.getFileExtensionFromUrl(
+                        path
+                    )
+                )
+
+
+                val intent = Intent(Intent.ACTION_VIEW)
+                intent.setType(mimeType)
+                intent.setDataAndType(uri_path, mimeType)
+                startActivity(intent)
             }
         }
     }
@@ -142,23 +172,6 @@ class FolderFragment : BaseFragment() {
         setNameDialog.onSetNameListener = { name ->
             viewModel.createFolder(folderName = name)
         }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        context?.let { ct ->
-            if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
-                && ActivityCompat.checkSelfPermission(ct, Manifest.permission.READ_MEDIA_IMAGES)
-                == PackageManager.PERMISSION_GRANTED
-                ) || (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
-                        && ActivityCompat.checkSelfPermission(ct, Manifest.permission.READ_EXTERNAL_STORAGE)
-                        == PackageManager.PERMISSION_GRANTED)) {
-                if (isGoToImageFolder) {
-                    viewModel.goToImageFolder()
-                }
-            }
-        }
-
     }
 
     private val requestPermission =

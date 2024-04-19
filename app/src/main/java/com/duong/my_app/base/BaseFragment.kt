@@ -14,14 +14,13 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.duong.my_app.R
+import com.duong.my_app.data.model.Image
 import com.duong.my_app.data.reponse.NavigationCommand
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 abstract class BaseFragment : Fragment() {
-
-    val TAG = this::class.simpleName
 
     abstract val viewModel: BaseViewModel
     var alertDialog: AlertDialog? = null

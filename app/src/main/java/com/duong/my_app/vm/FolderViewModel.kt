@@ -75,7 +75,7 @@ class FolderViewModel @Inject constructor(
             val list = mutableListOf<Image>()
             listImage.forEach { image ->
                 val temp = File(File(folder.path), image.name)
-                if (temp.mkdir()) {
+                if (temp.createNewFile()) {
                     File(image.path).move(temp)
                     list.add(image)
                 }

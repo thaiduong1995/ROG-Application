@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -21,6 +22,7 @@ import com.duong.my_app.databinding.FragmentImageBinding
 import com.duong.my_app.ui.adapter.ImageAdapter
 import com.duong.my_app.utls.rcv.addItemDecoration
 import com.duong.my_app.vm.ImageViewModel
+import com.duong.my_app.vm.ShareViewModel
 import kotlinx.coroutines.launch
 
 class ImageFragment : BaseFragment() {
@@ -28,6 +30,7 @@ class ImageFragment : BaseFragment() {
     override val viewModel by viewModels<ImageViewModel>()
 
     private lateinit var binding: FragmentImageBinding
+    private val shareViewModel by activityViewModels<ShareViewModel>()
     private val imageAdapter = ImageAdapter()
     private val listImageSelected = mutableListOf<Image>()
     private var isSelectAll = false
@@ -60,9 +63,7 @@ class ImageFragment : BaseFragment() {
 
     private fun observeListImage(imageState: ImageState) {
         when (imageState) {
-            is ImageState.Error -> {
-                Log.e(TAG, "load list image failed ${imageState.message}")
-            }
+            is ImageState.Error -> {}
             ImageState.IDLE -> {}
             ImageState.Loading -> binding.progressBar.isVisible = true
             is ImageState.Success -> {
@@ -88,7 +89,8 @@ class ImageFragment : BaseFragment() {
                 viewModel.navigateBack()
             }
             tvOpen.setOnClickListener {
-                viewModel.setListImageSelected(listImageSelected)
+                Log.d("observeListImageSelected", "${listImageSelected.size}")
+                shareViewModel.setListImageSelected(listImageSelected)
                 viewModel.navigateBack()
             }
             tvSelectAll.setOnClickListener {
@@ -100,8 +102,21 @@ class ImageFragment : BaseFragment() {
         }
         imageAdapter.apply {
             onSelectItemListener = { image, position ->
-                if (image.isSelected && !listImageSelected.contains(image)) {
+                var isExits = false
+                for (item in listImageSelected) {
+                    if (item.path == image.path) {
+                        item.isSelected = image.isSelected
+                        isExits = true
+                        break
+                    }
+                }
+                if (!isExits) {
                     listImageSelected.add(image)
+                }
+                listImageSelected.forEach {
+                    if (!it.isSelected) {
+                        listImageSelected.remove(it)
+                    }
                 }
             }
             onSelectAllListener = { listImage ->
