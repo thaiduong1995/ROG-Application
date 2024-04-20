@@ -1,18 +1,13 @@
 package com.duong.my_app.ui.fragment
 
 import android.Manifest
-import android.R.attr.path
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.MimeTypeMap
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.os.bundleOf
@@ -60,7 +55,10 @@ class FolderFragment : BaseFragment() {
         super.fetchData(context)
         when {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> viewModel.providerAllHiddenFolder()
-            ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED -> viewModel.providerAllHiddenFolder()
+            ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ) == PackageManager.PERMISSION_GRANTED -> viewModel.providerAllHiddenFolder()
         }
     }
 
@@ -84,8 +82,13 @@ class FolderFragment : BaseFragment() {
                     }
                 }
                 launch {
-                    shareViewModel.listImageSelectedFlow.collect {
-                        observeListImageSelected(it)
+                    viewModel.imageStateFlow.collect {
+                        observeImageState(it)
+                    }
+                }
+                launch {
+                    shareViewModel.imageSizeFlow.collect {
+                        observeImageSize(it)
                     }
                 }
             }
@@ -100,10 +103,9 @@ class FolderFragment : BaseFragment() {
         folder?.let { folderAdapter.insertItem(folder = it) }
     }
 
-    private fun observeListImageSelected(listImage: List<Image>) {
+    private fun observeImageSize(imageSize: Int) {
         folder?.let {
-            viewModel.moveImage(folder = it, listImage = listImage)
-            folderAdapter.updateItem(position = position, size = listImage.size)
+            folderAdapter.updateItem(position = position, size = imageSize)
         }
     }
 
@@ -111,9 +113,27 @@ class FolderFragment : BaseFragment() {
         when (imageState) {
             is ImageState.Error -> {}
             ImageState.IDLE -> {}
-            ImageState.Loading -> binding.progressBar.isVisible = true
+            ImageState.Loading -> binding.viewLoading.root.isVisible = true
             is ImageState.Success -> {
-                binding.progressBar.isGone = true
+                binding.viewLoading.root.isGone = true
+                folder?.path?.let {
+                    viewModel.goToFolderDetail(
+                        title = null,
+                        folderPath = it,
+                        imageState.listImage.toTypedArray()
+                    )
+                }
+            }
+        }
+    }
+
+    private fun observeImageState(imageState: ImageState) {
+        when (imageState) {
+            is ImageState.Error -> {}
+            ImageState.IDLE -> {}
+            ImageState.Loading -> binding.viewLoading.root.isVisible = true
+            is ImageState.Success -> {
+                binding.viewLoading.root.isGone = true
                 folderAdapter.updateItem(position, imageState.listImage.size)
             }
         }
@@ -128,6 +148,7 @@ class FolderFragment : BaseFragment() {
             )
         }
     }
+
     override fun initListener() {
         binding.btnCreate.setOnClickListener {
             onCreateFolderListener()
@@ -137,31 +158,28 @@ class FolderFragment : BaseFragment() {
                 this@FolderFragment.folder = folder
                 this@FolderFragment.position = position
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    checkDialogPermissionShowing(Manifest.permission.READ_MEDIA_IMAGES)
                     requestPermission.launch(Manifest.permission.READ_MEDIA_IMAGES)
-                } else requestPermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                } else {
+                    checkDialogPermissionShowing(Manifest.permission.READ_EXTERNAL_STORAGE)
+                    requestPermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                }
             }
             onClickItemListener = { folder, position ->
-                val intent = Intent(Intent.ACTION_GET_CONTENT)
-                val uri = Uri.parse(
-                    Environment.getExternalStorageState(File(folder.path))
-                            + File.separator + ".${folder.name}" + File.separator
-                )
-                intent.setDataAndType(uri,"application/*") // or application/*
-                startActivity(Intent.createChooser(intent, "Open folder"))
-
-                val file: File = File(path)
-                val uri_path = Uri.fromFile(file)
-                val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(
-                    MimeTypeMap.getFileExtensionFromUrl(
-                        path
+                binding.viewLoading.root.isVisible = true
+                val listImage = mutableListOf<Image>()
+                File(folder.path).listFiles()?.forEach {
+                    val image = Image(
+                        name = it.name,
+                        path = it.absolutePath
                     )
+                    listImage.add(image)
+                }
+                viewModel.goToFolderDetail(
+                    title = folder.name,
+                    folderPath = folder.path,
+                    listImage = listImage.toTypedArray()
                 )
-
-
-                val intent = Intent(Intent.ACTION_VIEW)
-                intent.setType(mimeType)
-                intent.setDataAndType(uri_path, mimeType)
-                startActivity(intent)
             }
         }
     }
@@ -177,21 +195,26 @@ class FolderFragment : BaseFragment() {
     private val requestPermission =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
-                viewModel.goToImageFolder()
+                viewModel.getAllImage()
                 onDismissPermissionDialog()
             } else {
                 when {
-                    Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU && !shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE) -> alertDialog?.show()
-                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !shouldShowRequestPermissionRationale(Manifest.permission.READ_MEDIA_IMAGES) -> alertDialog?.show()
+                    Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU && !isShowDialogPermission -> alertDialog?.show()
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !isShowDialogPermission -> alertDialog?.show()
                 }
             }
         }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        viewModel.clearData()
+    }
 
     companion object {
 
         @JvmStatic
         fun newInstance() = FolderFragment().apply {
-                arguments = bundleOf()
-            }
+            arguments = bundleOf()
+        }
     }
 }

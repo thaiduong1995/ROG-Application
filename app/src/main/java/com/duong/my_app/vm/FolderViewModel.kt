@@ -1,13 +1,16 @@
 package com.duong.my_app.vm
 
 import android.content.Context
-import android.util.Log
+import android.database.Cursor
+import android.net.Uri
+import android.provider.MediaStore
 import androidx.lifecycle.viewModelScope
 import com.duong.my_app.base.BaseViewModel
 import com.duong.my_app.data.database.MyThemeRepository
 import com.duong.my_app.data.model.Folder
 import com.duong.my_app.data.model.Image
 import com.duong.my_app.data.reponse.ImageState
+import com.duong.my_app.extension.getRealPathFromURI
 import com.duong.my_app.extension.move
 import com.duong.my_app.ui.fragment.MainFragmentDirections
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,8 +20,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.io.File
-import java.nio.file.Files
-import java.nio.file.StandardCopyOption
 import javax.inject.Inject
 
 @HiltViewModel
@@ -35,6 +36,9 @@ class FolderViewModel @Inject constructor(
 
     private val _listImageFlow: MutableStateFlow<ImageState> = MutableStateFlow(ImageState.IDLE)
     val listImageFlow: StateFlow<ImageState> = _listImageFlow
+
+    private val _imageStateFlow: MutableStateFlow<ImageState> = MutableStateFlow(ImageState.IDLE)
+    val imageStateFlow: StateFlow<ImageState> = _imageStateFlow
 
     fun providerAllHiddenFolder() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -56,7 +60,6 @@ class FolderViewModel @Inject constructor(
     fun createFolder(folderName: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val folder = File(context.filesDir, ".${folderName}")
-            Log.d("FolderViewModel", "${folder.path}")
             if (!folder.exists()) {
                 folder.mkdir()
                 File(folder.name, ".nomedia").mkdir()
@@ -65,22 +68,45 @@ class FolderViewModel @Inject constructor(
         }
     }
 
-    fun goToImageFolder() {
-        navigate(MainFragmentDirections.actionMainToImage())
+    fun goToFolderDetail(title: String?, folderPath: String, listImage: Array<Image>) {
+        navigate(
+            MainFragmentDirections.actionMainToListImage(
+                title = title,
+                folderPath = folderPath,
+                listImage = listImage
+            )
+        )
     }
 
-    fun moveImage(folder: Folder, listImage: List<Image>) {
+    fun getAllImage() {
         viewModelScope.launch(Dispatchers.IO) {
             _listImageFlow.value = ImageState.Loading
-            val list = mutableListOf<Image>()
-            listImage.forEach { image ->
-                val temp = File(File(folder.path), image.name)
-                if (temp.createNewFile()) {
-                    File(image.path).move(temp)
-                    list.add(image)
+            val uriExternal: Uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+            val cursor: Cursor?
+            val columnIndexID: Int
+            val listOfAllImages: MutableList<Image> = mutableListOf()
+            val projection = arrayOf(MediaStore.Images.Media._ID)
+            var imageId: Long
+            cursor = context.contentResolver.query(uriExternal, projection, null, null, null)
+            if (cursor != null) {
+                columnIndexID = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID)
+                while (cursor.moveToNext()) {
+                    imageId = cursor.getLong(columnIndexID)
+                    val uriImage = Uri.withAppendedPath(uriExternal, "" + imageId)
+                    getRealPathFromURI(context, uriImage)?.let {
+                        listOfAllImages.add(
+                            Image(name = File(it).name, path = it)
+                        )
+                    }
                 }
+                cursor.close()
             }
-            _listImageFlow.value = ImageState.Success(list)
+            _listImageFlow.value = ImageState.Success(listOfAllImages)
         }
+    }
+
+    override fun clearData() {
+        super.clearData()
+        _listImageFlow.value = ImageState.IDLE
     }
 }

@@ -10,12 +10,12 @@ import kotlinx.coroutines.launch
 
 class ShareViewModel : ViewModel() {
 
-    private val _listImageSelectedFlow: MutableStateFlow<List<Image>> = MutableStateFlow(listOf())
-    val listImageSelectedFlow: StateFlow<List<Image>> = _listImageSelectedFlow
+    private val _imageSizeFlow: MutableStateFlow<Int> = MutableStateFlow(0)
+    val imageSizeFlow: StateFlow<Int> = _imageSizeFlow
 
-    fun setListImageSelected(listImage: List<Image>) {
+    fun setImageSize(imageSize: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            _listImageSelectedFlow.value = listImage
+            _imageSizeFlow.value = imageSize
         }
     }
 }

@@ -8,9 +8,9 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutSearch"
         android:layout_width="@dimen/size_0"
-        android:background="@drawable/bg_stroke_green_radius_20"
         android:layout_height="@dimen/size_0"
         android:layout_marginTop="@dimen/size_20"
+        android:background="@drawable/bg_stroke_green_radius_20"
         app:layout_constraintDimensionRatio="272:40"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -33,22 +33,22 @@
             android:id="@+id/edtSearch"
             android:layout_width="@dimen/size_0"
             android:layout_height="@dimen/size_0"
+            android:layout_marginVertical="@dimen/size_1"
+            android:layout_marginEnd="@dimen/size_20"
             android:background="@android:color/transparent"
             android:gravity="start|center_vertical"
             android:hint="@string/search_app"
-            app:queryBackground="@android:color/transparent"
-            android:layout_marginVertical="@dimen/size_1"
-            android:layout_marginEnd="@dimen/size_20"
             android:inputType="text"
             android:singleLine="true"
             android:textColor="@color/grayC4CDE2"
             android:textColorHint="@color/grayA3A3A3"
+            app:iconifiedByDefault="false"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/imgSearch"
             app:layout_constraintTop_toTopOf="parent"
-            app:searchIcon="@null"
-            app:iconifiedByDefault="false" />
+            app:queryBackground="@android:color/transparent"
+            app:searchIcon="@null" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -57,8 +57,8 @@
         android:layout_width="@dimen/size_0"
         android:layout_height="@dimen/size_0"
         android:clipToPadding="false"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         android:orientation="vertical"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@id/layoutSearch"
         app:layout_constraintStart_toStartOf="@id/layoutSearch"
@@ -87,16 +87,15 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintWidth_percent="0.5" />
 
-    <com.airbnb.lottie.LottieAnimationView
-        android:id="@+id/progressBar"
-        android:layout_width="@dimen/size_100"
-        android:layout_height="@dimen/size_100"
+    <include
+        android:id="@+id/viewLoading"
+        layout="@layout/view_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:lottie_autoPlay="true"
-        app:lottie_loop="true"
-        app:lottie_fileName="loading.json" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,12 +1,11 @@
 package com.duong.my_app.ui.custom.bottombar
 
 import android.content.Context
-import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.duong.my_app.R
-import com.duong.my_app.databinding.WaveBottomNavigationViewBinding
+import com.duong.my_app.databinding.ViewBottomNavigationBinding
 
 /**
  * Created by Hưng Nguyễn on 05/12/2023
@@ -19,8 +18,8 @@ class BottomNavigation @JvmOverloads constructor(
     styleDef: Int = 0
 ) : ConstraintLayout(context, attrs, styleDef) {
 
-    private val binding: WaveBottomNavigationViewBinding =
-        WaveBottomNavigationViewBinding.inflate(LayoutInflater.from(context), this, true)
+    private val binding: ViewBottomNavigationBinding =
+        ViewBottomNavigationBinding.inflate(LayoutInflater.from(context), this, true)
 
     private var onTabSelectedListener: OnTabSelectedListener? = null
     private var bottomItemLayouts = mutableListOf<BottomItemLayout>()

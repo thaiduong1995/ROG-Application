@@ -27,12 +27,50 @@
         tools:layout="@layout/fragment_main">
 
         <action
-            android:id="@+id/actionMainToImage"
-            app:destination="@id/imageFragment" />
+            android:id="@+id/actionMainToListImage"
+            app:destination="@id/listImageFragment"
+            app:enterAnim="@anim/from_right"
+            app:exitAnim="@anim/to_left"
+            app:popEnterAnim="@anim/from_left"
+            app:popExitAnim="@anim/to_right" />
     </fragment>
 
     <fragment
-        android:id="@+id/imageFragment"
-        android:name="com.duong.my_app.ui.fragment.ImageFragment"
-        android:label="ImageFragment" />
+        android:id="@+id/listImageFragment"
+        android:name="com.duong.my_app.ui.fragment.ListImageFragment"
+        android:label="ListImageFragment">
+
+        <argument
+            android:name="title"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="folderPath"
+            app:argType="string" />
+        <argument
+            android:name="listImage"
+            app:argType="com.duong.my_app.data.model.Image[]" />
+        <action
+            android:id="@+id/actionListImageToImagePreview"
+            app:destination="@id/imagePreviewFragment"
+            app:enterAnim="@anim/from_right"
+            app:exitAnim="@anim/to_left"
+            app:popEnterAnim="@anim/from_left"
+            app:popExitAnim="@anim/to_right" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/imagePreviewFragment"
+        android:name="com.duong.my_app.ui.fragment.ImagePreviewFragment"
+        android:label="ImagePreviewFragment">
+
+        <argument
+            android:name="image"
+            app:argType="com.duong.my_app.data.model.Image" />
+        <argument
+            android:name="listImage"
+            app:argType="com.duong.my_app.data.model.Image[]" />
+    </fragment>
+
 </navigation>

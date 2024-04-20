@@ -20,4 +20,6 @@
     <string name="ok">Ok</string>
     <string name="select_all">Select All</string>
     <string name="open">Open</string>
+    <string name="restore">Restore</string>
+    <string name="delete">Delete</string>
 </resources>

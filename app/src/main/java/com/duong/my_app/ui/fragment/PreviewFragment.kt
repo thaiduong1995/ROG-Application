@@ -67,5 +67,6 @@ class PreviewFragment : BaseFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         activity?.showStatusBar()
+        viewModel.clearData()
     }
 }

@@ -57,17 +57,17 @@ class ThemeFragment : BaseFragment() {
     private fun observeListVideo(videoState: VideoState) {
         when (videoState) {
             is VideoState.Error -> {
-                binding.loading.isGone = true
+                binding.viewLoading.root.isGone = true
                 activity?.showSnackBar(binding.rcvVideo, getString(R.string.common_error))
             }
 
             VideoState.IDLE -> {}
             VideoState.Loading -> {
-                binding.loading.isVisible = true
+                binding.viewLoading.root.isVisible = true
             }
 
             is VideoState.Success -> {
-                binding.loading.isGone = true
+                binding.viewLoading.root.isGone = true
                 videoPreviewAdapter.setData(videoState.listVideo)
             }
         }
@@ -112,8 +112,14 @@ class ThemeFragment : BaseFragment() {
 
     private fun requestPermission() {
         when {
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE -> requestPermission.launch(Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED)
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> requestPermission.launch(Manifest.permission.READ_MEDIA_VIDEO)
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE -> requestPermission.launch(
+                Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
+            )
+
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> requestPermission.launch(
+                Manifest.permission.READ_MEDIA_VIDEO
+            )
+
             else -> requestPermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
         }
     }

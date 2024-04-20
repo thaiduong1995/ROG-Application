@@ -7,14 +7,12 @@ import android.os.Bundle
 import android.provider.Settings
 import android.view.View
 import androidx.appcompat.app.AlertDialog
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.duong.my_app.R
-import com.duong.my_app.data.model.Image
 import com.duong.my_app.data.reponse.NavigationCommand
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -23,6 +21,9 @@ import kotlinx.coroutines.launch
 abstract class BaseFragment : Fragment() {
 
     abstract val viewModel: BaseViewModel
+
+    var isShowDialogPermission: Boolean = false
+        private set
     var alertDialog: AlertDialog? = null
         private set
 
@@ -70,7 +71,6 @@ abstract class BaseFragment : Fragment() {
             is NavigationCommand.ToDirection -> {
                 try {
                     findNavController().navigate(navCommand.directions)
-                    viewModel.clearData()
                 } catch (ex: IllegalArgumentException) {
                     viewModel.navigateBack()
                 }
@@ -86,6 +86,10 @@ abstract class BaseFragment : Fragment() {
         if (alertDialog?.isShowing == true) {
             alertDialog?.dismiss()
         }
+    }
+
+    open fun checkDialogPermissionShowing(permission: String) {
+        isShowDialogPermission = shouldShowRequestPermissionRationale(permission)
     }
 
     private fun openAppSettings() {

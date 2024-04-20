@@ -3,7 +3,6 @@ package com.duong.my_app.ui.adapter
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.view.isGone
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.duong.my_app.data.model.Image
@@ -12,13 +11,12 @@ import com.duong.my_app.databinding.ItemImageBinding
 class ImageAdapter : RecyclerView.Adapter<ImageAdapter.ViewHolder>() {
 
     private val listImage = mutableListOf<Image>()
+    private var isSelect = false
+    var onClickItemListener: ((Image, Int) -> Unit)? = null
     var onSelectItemListener: ((Image, Int) -> Unit)? = null
     var onSelectAllListener: (List<Image>) -> Unit = {}
 
     fun setData(listImage: List<Image>) {
-        listImage.forEach {
-            Log.d("listImage", "$it")
-        }
         this.listImage.apply {
             clear()
             addAll(listImage)
@@ -26,12 +24,24 @@ class ImageAdapter : RecyclerView.Adapter<ImageAdapter.ViewHolder>() {
         notifyDataSetChanged()
     }
 
+    fun removeSelect() {
+        isSelect = false
+    }
+
     fun selectAll(isSelect: Boolean) {
+        this.isSelect = isSelect
         listImage.forEach {
             it.isSelected = isSelect
         }
         onSelectAllListener(listImage)
         notifyDataSetChanged()
+    }
+
+    fun removeItem(listPosition: List<Int>) {
+        listPosition.forEach {
+            listImage.removeAt(it)
+            notifyItemRemoved(it)
+        }
     }
 
     inner class ViewHolder(
@@ -44,12 +54,26 @@ class ImageAdapter : RecyclerView.Adapter<ImageAdapter.ViewHolder>() {
                     Glide.with(context).load(item.path).into(this)
                     clipToOutline = true
                     alpha = if (item.isSelected) 0.5f else 1f
+
+                    setOnClickListener {
+                        if (isSelect) {
+                            item.isSelected = !item.isSelected
+                            onSelectItemListener?.invoke(item, position)
+                            notifyItemChanged(position)
+                        } else {
+                            onClickItemListener?.invoke(item, position)
+                        }
+                    }
+
+                    setOnLongClickListener {
+                        isSelect = true
+                        item.isSelected = !item.isSelected
+                        onSelectItemListener?.invoke(item, position)
+                        notifyItemChanged(position)
+                        true
+                    }
                 }
-                imgThumb.setOnClickListener {
-                    item.isSelected = !item.isSelected
-                    onSelectItemListener?.invoke(item, position)
-                    notifyItemChanged(position)
-                }
+
             }
         }
     }

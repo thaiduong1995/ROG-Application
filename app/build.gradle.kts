@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.jetbrainsKotlinKapt)
     alias(libs.plugins.daggerHilt)
     alias(libs.plugins.navigationSaf)
+    alias(libs.plugins.parcelize)
 }
 
 android {

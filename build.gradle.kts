@@ -5,4 +5,5 @@ plugins {
     alias(libs.plugins.jetbrainsKotlinKapt) apply false
     alias(libs.plugins.daggerHilt) apply false
     alias(libs.plugins.navigationSaf) apply false
+    alias(libs.plugins.parcelize) apply false
 }
