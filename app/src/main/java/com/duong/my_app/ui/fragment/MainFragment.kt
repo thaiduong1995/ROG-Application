@@ -24,7 +24,6 @@ class MainFragment : BaseFragment() {
     override val viewModel by viewModels<MainViewModel>()
 
     private lateinit var binding: FragmentMainBinding
-    private var currentTab = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,9 +50,9 @@ class MainFragment : BaseFragment() {
             }
         }
         val viewPager = ViewPagerAdapter(childFragmentManager, lifecycle).apply {
-            addFragment(ThemeFragment.newInstance(), getString(R.string.theme))
-            addFragment(AppManagerFragment.newInstance(), getString(R.string.app_manager))
-            addFragment(FolderFragment.newInstance(), getString(R.string.folder))
+            addFragment(ThemeFragment.newInstance())
+            addFragment(AppManagerFragment.newInstance())
+            addFragment(FolderFragment.newInstance())
         }
         binding.viewPager.apply {
             isUserInputEnabled = false

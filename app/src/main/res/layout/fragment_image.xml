@@ -4,8 +4,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/imgPreview"
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvError"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/common_error"
+        android:textSize="@dimen/text_size_16"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.duong.my_app.ui.custom.photoview.PhotoView
+        android:id="@+id/photoView"
         android:layout_width="@dimen/size_0"
         android:layout_height="@dimen/size_0"
         app:layout_constraintBottom_toBottomOf="parent"

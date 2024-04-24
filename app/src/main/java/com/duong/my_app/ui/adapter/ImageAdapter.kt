@@ -44,6 +44,11 @@ class ImageAdapter : RecyclerView.Adapter<ImageAdapter.ViewHolder>() {
         }
     }
 
+    fun removeItem(position: Int) {
+        listImage.removeAt(position)
+        notifyItemRemoved(position)
+    }
+
     inner class ViewHolder(
         private val binding: ItemImageBinding
     ) : RecyclerView.ViewHolder(binding.root) {

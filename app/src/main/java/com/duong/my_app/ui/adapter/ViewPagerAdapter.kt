@@ -11,21 +11,10 @@ class ViewPagerAdapter(
 ) : FragmentStateAdapter(manager, lifecycle) {
 
     private val listFragment = mutableListOf<BaseFragment>()
-    private val listTitle = mutableListOf<String>()
-    private val listIcon = mutableListOf<Int>()
+    private var listId: List<Long>? = null
 
-    fun addFragment(fragment: BaseFragment, title: String, icon: Int? = null) {
+    fun addFragment(fragment: BaseFragment) {
         listFragment.add(fragment)
-        listTitle.add(title)
-        icon?.let { listIcon.add(it) }
-    }
-
-    fun getTitle(position: Int): String {
-        return listTitle[position]
-    }
-
-    fun getIcon(position: Int): Int? {
-        return listIcon.getOrNull(position)
     }
 
     override fun getItemCount(): Int {
@@ -34,5 +23,24 @@ class ViewPagerAdapter(
 
     override fun createFragment(position: Int): Fragment {
         return listFragment[position]
+    }
+
+    fun remove(index: Int) {
+        listFragment.removeAt(index)
+        notifyItemRemoved(index)
+        notifyItemChanged(index, itemCount)
+        updateItemIds()
+    }
+
+    private fun updateItemIds() {
+        listId = listFragment.map { it.hashCode().toLong() }
+    }
+
+    override fun getItemId(position: Int): Long {
+        return listFragment[position].hashCode().toLong()
+    }
+
+    override fun containsItem(itemId: Long): Boolean {
+        return listFragment.find { it.hashCode().toLong() == itemId } != null
     }
 }

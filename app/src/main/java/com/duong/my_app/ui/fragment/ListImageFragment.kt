@@ -61,6 +61,11 @@ class ListImageFragment : BaseFragment() {
                         observeImageState(it)
                     }
                 }
+                launch {
+                    shareViewModel.removePositionFlow.collect {
+                        observeRemovePosition(it)
+                    }
+                }
             }
         }
     }
@@ -85,6 +90,12 @@ class ListImageFragment : BaseFragment() {
                 isRestore = false
                 isDelete = false
             }
+        }
+    }
+
+    private fun observeRemovePosition(position: Int) {
+        if (position > -1) {
+            imageAdapter.removeItem(position)
         }
     }
 
@@ -197,6 +208,7 @@ class ListImageFragment : BaseFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         viewModel.clearData()
+        shareViewModel.clearImageOption()
     }
 
     companion object {

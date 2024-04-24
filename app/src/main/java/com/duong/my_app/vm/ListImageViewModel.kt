@@ -40,6 +40,7 @@ class ListImageViewModel @Inject constructor(
             listImage.forEach { image ->
                 val temp = File(File(folderPath), image.name)
                 if (temp.createNewFile()) {
+                    if (!File(image.path).exists()) return@forEach
                     File(image.path).move(temp)
                     list.add(image)
                 }

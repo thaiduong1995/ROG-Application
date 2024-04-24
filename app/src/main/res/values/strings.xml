@@ -22,4 +22,7 @@
     <string name="open">Open</string>
     <string name="restore">Restore</string>
     <string name="delete">Delete</string>
+    <string name="image">Image</string>
+    <string name="confirm_delete_section">Confirm to delete this section</string>
+    <string name="cancel">Cancel</string>
 </resources>
