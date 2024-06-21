@@ -23,11 +23,18 @@ class BottomNavigation @JvmOverloads constructor(
 
     private var onTabSelectedListener: OnTabSelectedListener? = null
     private var bottomItemLayouts = mutableListOf<BottomItemLayout>()
-    var currentItemPosition = 0
+    private var currentItemPosition = 0
         private set
 
     fun setOnTabSelectedListener(onTabSelectedListener: OnTabSelectedListener?) {
         this.onTabSelectedListener = onTabSelectedListener
+    }
+
+    fun setCurrentItemPosition(position: Int) {
+        for (i in bottomItemLayouts.indices) {
+            bottomItemLayouts[i].isSelected = i == position
+            currentItemPosition = position
+        }
     }
 
     private fun setupWithViewpager() {
@@ -75,7 +82,7 @@ class BottomNavigation @JvmOverloads constructor(
             setBottomItem(
                 BottomItem(
                     icon = R.drawable.ic_folder,
-                    title = context.getString(R.string.folder)
+                    title = context.getString(R.string.media)
                 )
             )
             setTabPosition(bottomItemLayouts.size)

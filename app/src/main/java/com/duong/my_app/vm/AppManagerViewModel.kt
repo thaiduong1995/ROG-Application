@@ -32,6 +32,8 @@ class AppManagerViewModel @Inject constructor(
     private val repository: MyThemeRepository
 ) : BaseViewModel() {
 
+    override val TAG = "AppManagerViewModel"
+
     private val _listAppFlow: MutableStateFlow<AppState> = MutableStateFlow(AppState.IDLE)
     val listAppFlow: StateFlow<AppState> = _listAppFlow
 
@@ -119,15 +121,4 @@ class AppManagerViewModel @Inject constructor(
             _listAppFlow.value = AppState.Success(listApp = appDataList)
         }
     }
-
-    fun removePreview() {
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.removePreview()
-        }
-    }
-
-    companion object {
-        private var TAG = this::class.simpleName
-    }
-
 }

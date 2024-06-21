@@ -46,6 +46,8 @@ class DialogDelete : BaseDialog() {
 
     companion object {
 
+        const val TAG = "DialogDelete"
+
         @JvmStatic
         fun newInstance() = DialogDelete().apply {
             arguments = bundleOf()

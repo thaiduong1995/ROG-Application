@@ -1,9 +1,9 @@
 package com.duong.my_app.data.database
 
 import android.content.Context
-import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
+import androidx.datastore.preferences.core.intPreferencesKey
 import com.duong.my_app.extension.dataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
@@ -17,13 +17,13 @@ import javax.inject.Singleton
 class MyThemeRepository @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
-    suspend fun removePreview() {
+    suspend fun removePreview(firstInstallState: Int) {
         context.dataStore.edit {
-            it[IS_FIRST_TIME] = false
+            it[FIRST_INSTALL] = firstInstallState
         }
     }
 
-    val isFirstTime: Flow<Boolean> = context.dataStore.data.catch { exception ->
+    val firstInstall: Flow<Int> = context.dataStore.data.catch { exception ->
         if (exception is IOException) {
             emit(emptyPreferences())
         } else {
@@ -31,10 +31,10 @@ class MyThemeRepository @Inject constructor(
             throw exception
         }
     }.map { preference ->
-        preference[IS_FIRST_TIME] ?: true
+        preference[FIRST_INSTALL] ?: 0
     }
 
     companion object {
-        val IS_FIRST_TIME = booleanPreferencesKey("IS_FIRST_TIME_INSTALL")
+        val FIRST_INSTALL = intPreferencesKey("FIRST_INSTALL")
     }
 }

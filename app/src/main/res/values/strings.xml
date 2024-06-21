@@ -14,10 +14,10 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="search_app">Search App</string>
-    <string name="folder">Folder</string>
+    <string name="media">Media</string>
     <string name="create_folder">Create Folder</string>
-    <string name="set_name">Set name...</string>
-    <string name="ok">Ok</string>
+    <string name="set_name">Set name…</string>
+    <string name="ok">OK</string>
     <string name="select_all">Select All</string>
     <string name="open">Open</string>
     <string name="restore">Restore</string>
@@ -25,4 +25,10 @@
     <string name="image">Image</string>
     <string name="confirm_delete_section">Confirm to delete this section</string>
     <string name="cancel">Cancel</string>
+    <string name="test">Test</string>
+    <string name="loading">Loading</string>
+    <string name="make_video_des">Processing time depends on network speed and file size.\nPlease wait a second</string>
+    <string name="resolving">Resolving</string>
+    <string name="dot" translatable="false">.</string>
+    <integer name="dots_anim_time">1000</integer>
 </resources>

@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent">
 
     <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/imgClose"
         android:layout_width="@dimen/size_50"
         android:layout_height="@dimen/size_50"
-        android:src="@drawable/ic_close"
         android:scaleType="centerInside"
-        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/ic_close"
         app:layout_constraintEnd_toEndOf="parent"
-        android:id="@+id/imgClose" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/edtName"
@@ -28,17 +28,17 @@
         app:layout_constraintTop_toBottomOf="@id/imgClose" />
 
     <androidx.appcompat.widget.AppCompatButton
-        android:layout_marginTop="@dimen/size_20"
         android:id="@+id/btnOk"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/size_20"
         android:background="@drawable/bg_green_radius_20"
-        android:text="@string/ok"
         android:paddingHorizontal="@dimen/size_10"
+        android:text="@string/ok"
         android:textAllCaps="false"
         android:textColor="@color/white"
         android:textSize="@dimen/text_size_18"
-        app:layout_constraintTop_toBottomOf="@id/edtName"
-        app:layout_constraintStart_toStartOf="@id/edtName" />
+        app:layout_constraintStart_toStartOf="@id/edtName"
+        app:layout_constraintTop_toBottomOf="@id/edtName" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

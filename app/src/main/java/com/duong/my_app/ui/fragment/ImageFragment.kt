@@ -1,123 +1,163 @@
 package com.duong.my_app.ui.fragment
 
-import android.content.Intent
-import androidx.fragment.app.viewModels
+import android.Manifest
+import android.content.Context
+import android.os.Build
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.FileProvider
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.bumptech.glide.Glide
-import com.bumptech.glide.RequestBuilder
-import com.duong.my_app.BuildConfig
 import com.duong.my_app.R
 import com.duong.my_app.base.BaseFragment
+import com.duong.my_app.data.model.Image
+import com.duong.my_app.data.reponse.ImageState
+import com.duong.my_app.data.reponse.ProgressBarState
 import com.duong.my_app.databinding.FragmentImageBinding
+import com.duong.my_app.ui.adapter.ImageAdapter
+import com.duong.my_app.utls.rcv.addItemDecoration
 import com.duong.my_app.vm.ImageViewModel
-import com.duong.my_app.vm.ShareViewModel
-import kotlinx.coroutines.flow.collect
+import com.duong.my_app.vm.SharedViewModel
 import kotlinx.coroutines.launch
-import java.io.File
 
 class ImageFragment : BaseFragment() {
 
-
     override val viewModel by viewModels<ImageViewModel>()
+    override val TAG = "ImageFragment"
 
-    private lateinit var binding: FragmentImageBinding
-    private val shareViewModel by activityViewModels<ShareViewModel>()
-    private var isPreview = false
-    private var deg = 0f
+    private var _binding: FragmentImageBinding? = null
+    private val binding get() = _binding!!
+
+    private val sharedViewModel by activityViewModels<SharedViewModel>()
+    private val imageAdapter = ImageAdapter()
+    private val imageList = mutableListOf<Image>()
+
+    override fun fetchData(context: Context) {
+        super.fetchData(context)
+
+        requestPermission()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentImageBinding.inflate(inflater, container, false)
+        _binding = FragmentImageBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun initData() {
         super.initData()
+
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
                 launch {
-                    shareViewModel.degFlow.collect {
-                        observeDeg(it)
+                    sharedViewModel.bundleSaveFlow.collect {
+                        observeBundleSave(it)
                     }
                 }
                 launch {
-                    shareViewModel.isPreviewFlow.collect {
-                        observePreview(it)
-                    }
-                }
-                launch {
-                    shareViewModel.shareImageFlow.collect {
-                        observeImageShare(it)
+                    sharedViewModel.imageListFlow.collect {
+                        observeImageList(it)
                     }
                 }
             }
         }
     }
 
-    private fun observeDeg(deg: Float) {
-        this.deg = deg
-        binding.photoView.setRotationTo(deg)
+    private fun observeBundleSave(bundleList: List<Bundle>) {
+
     }
 
-    private fun observePreview(isPreview: Boolean) {
-        this.isPreview = isPreview
+    private fun observeImageList(imageState: ImageState) {
+        Log.d("ProgressBarState", "$TAG - $imageState")
+//        when (imageState) {
+//            is ImageState.Error -> {}
+//            ImageState.Idle -> {}
+//            ImageState.Prepare -> {
+//                requestPermission()
+//            }
+//            ImageState.Loading -> {
+//                sharedViewModel.setProgressBarState(ProgressBarState.LoadingData)
+//                imageList.clear()
+//            }
+//
+//            is ImageState.Success -> {
+//                sharedViewModel.setProgressBarState(ProgressBarState.Idle)
+//                imageAdapter.setData(imageState.imageList)
+//                imageList.addAll(imageState.imageList)
+//            }
+//
+//        }
     }
 
-    private fun observeImageShare(imageFile: File?) {
-        if (context != null && imageFile != null) {
-            val uri = FileProvider.getUriForFile(
-                requireContext(),
-                BuildConfig.APPLICATION_ID + ".provider",
-                imageFile
-            )
-            val intent = Intent(Intent.ACTION_SEND)
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            intent.setType("image/*")
-            intent.putExtra(Intent.EXTRA_STREAM, uri)
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            startActivity(intent)
-        }
-    }
 
     override fun initUi() {
-        with(binding.photoView) {
-            Glide.with(context).load(arguments?.getString(IMAGE_PATH)).into(this)
+        binding.rcvImage.apply {
+            adapter = imageAdapter
+            addItemDecoration(
+                resources.getDimensionPixelOffset(R.dimen.size_10),
+                resources.getDimensionPixelOffset(R.dimen.size_10)
+            )
         }
     }
 
     override fun initListener() {
-        binding.apply {
-            photoView.setOnClickListener {
-                isPreview = !isPreview
-                shareViewModel.setPreview(isPreview)
-            }
-
+        imageAdapter.onClickItemListener = { image, position ->
+            viewModel.goToImagePreview(imageList.toTypedArray(), position)
         }
     }
 
+    private fun requestPermission() {
+        when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE -> requestPermission.launch(
+                Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
+            )
+
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> requestPermission.launch(
+                Manifest.permission.READ_MEDIA_IMAGES
+            )
+
+            else -> requestPermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+        }
+    }
+
+    private val requestPermission =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            when {
+                isGranted -> {
+                    sharedViewModel.providerListAllImage()
+                    onDismissPermissionDialog()
+                }
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE && !shouldShowRequestPermissionRationale(
+                    Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
+                ) -> alertDialog?.show()
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !shouldShowRequestPermissionRationale(
+                    Manifest.permission.READ_MEDIA_IMAGES
+                ) -> alertDialog?.show()
+                Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU && !shouldShowRequestPermissionRationale(
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                ) -> alertDialog?.show()
+            }
+        }
+
     override fun onDestroyView() {
         super.onDestroyView()
-        shareViewModel.clearImageOption()
+        viewModel.clearData()
     }
 
     companion object {
 
-        private const val IMAGE_PATH = "IMAGE_PATH"
-
         @JvmStatic
-        fun newInstance(imagePath: String) = ImageFragment().apply {
-            arguments = bundleOf(IMAGE_PATH to imagePath)
+        fun newInstance() = ImageFragment().apply {
+            arguments = bundleOf()
         }
     }
 }

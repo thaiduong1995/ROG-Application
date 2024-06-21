@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 abstract class BaseFragment : Fragment() {
 
     abstract val viewModel: BaseViewModel
-    val TAG = this::class.simpleName
+    abstract val TAG: String
 
     var isShowDialogPermission: Boolean = false
         private set

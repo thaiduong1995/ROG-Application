@@ -58,22 +58,22 @@ android {
 dependencies {
 
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.lifecycle.runtime.ktx)
 
     implementation(libs.hilt.android)
-    implementation(libs.androidx.legacy.support.v4)
-    implementation(libs.androidx.lifecycle.livedata.ktx)
-    implementation(libs.androidx.lifecycle.viewmodel.ktx)
-    implementation(libs.androidx.fragment.ktx)
+    implementation(libs.legacy.support.v4)
+    implementation(libs.lifecycle.livedata.ktx)
+    implementation(libs.lifecycle.viewmodel.ktx)
+    implementation(libs.fragment.ktx)
     kapt(libs.hilt.android.compiler)
 
     implementation(libs.navigation.fragment.ktx)
     implementation(libs.navigation.ui.ktx)
 
-    implementation(libs.room)
+    implementation(libs.room.ktx)
     kapt(libs.room.compiler)
 
-    implementation(libs.dataStore)
+    implementation(libs.datastore.preferences)
     implementation(libs.glide)
     implementation(libs.lottie)
 }

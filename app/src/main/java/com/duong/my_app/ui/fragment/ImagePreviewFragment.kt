@@ -2,10 +2,10 @@ package com.duong.my_app.ui.fragment
 
 import android.content.Context
 import android.os.Bundle
-import android.os.Environment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
@@ -14,38 +14,40 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.navArgs
-import androidx.viewpager2.widget.ViewPager2
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.PagerSnapHelper
+import androidx.recyclerview.widget.SnapHelper
 import com.duong.my_app.base.BaseFragment
 import com.duong.my_app.data.model.Image
-import com.duong.my_app.data.reponse.ImageState
 import com.duong.my_app.databinding.FragmentImagePreviewBinding
-import com.duong.my_app.ui.adapter.ViewPagerAdapter
+import com.duong.my_app.extension.getCurrentPosition
+import com.duong.my_app.ui.adapter.ImagePreviewAdapter
 import com.duong.my_app.ui.dialog.DialogDelete
+import com.duong.my_app.utls.rcv.CustomScrollListener
 import com.duong.my_app.vm.ImagePreviewViewModel
-import com.duong.my_app.vm.ListImageViewModel
-import com.duong.my_app.vm.ShareViewModel
+import com.duong.my_app.vm.SharedViewModel
 import kotlinx.coroutines.launch
+import java.io.File
 
 class ImagePreviewFragment : BaseFragment() {
 
     override val viewModel by viewModels<ImagePreviewViewModel>()
+    override val TAG = "VideoFragment"
 
-    private lateinit var binding: FragmentImagePreviewBinding
+    private var _binding: FragmentImagePreviewBinding? = null
+    private val binding get() = _binding!!
     private val navArgs by navArgs<ImagePreviewFragmentArgs>()
-    private val shareViewModel by activityViewModels<ShareViewModel>()
-    private val listImageViewModel by viewModels<ListImageViewModel>()
-    private val listImage = mutableListOf<Image>()
-    private val listDelete = mutableListOf<Int>()
-    private var viewPageAdapter: ViewPagerAdapter? = null
-    private var selectedPosition = 0
+
+    private val sharedViewModel by activityViewModels<SharedViewModel>()
+    private var imagePreviewAdapter = ImagePreviewAdapter()
+    private val imageList = mutableListOf<Image>()
     private var isPreview = false
-    private var deg = 0f
 
     override fun fetchData(context: Context) {
         super.fetchData(context)
-        listImage.apply {
+        imageList.apply {
             clear()
-            addAll(navArgs.listImage.toList())
+            addAll(navArgs.imageList.toList())
         }
     }
 
@@ -53,7 +55,7 @@ class ImagePreviewFragment : BaseFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentImagePreviewBinding.inflate(inflater, container, false)
+        _binding = FragmentImagePreviewBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -62,72 +64,29 @@ class ImagePreviewFragment : BaseFragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
                 launch {
-                    shareViewModel.isPreviewFlow.collect {
+                    sharedViewModel.isPreviewFlow.collect {
                         observePreview(it)
                     }
                 }
-                launch {
-                    viewModel.isDeleteFlow.collect {
-                        observeFileDelete(it)
-                    }
-                }
-                launch {
-                    listImageViewModel.imageStateFlow.collect {
-                        observeImageState(it)
-                    }
-                }
             }
         }
-        viewPageAdapter = ViewPagerAdapter(childFragmentManager, lifecycle).apply {
-            navArgs.listImage.forEach {
-                addFragment(ImageFragment.newInstance(imagePath = it.path))
-            }
-        }
-        viewPageAdapter?.let {
-            binding.viewPager.apply {
-                offscreenPageLimit = it.itemCount
-                adapter = it
-                registerOnPageChangeCallback(callback)
-            }
-        }
+        imagePreviewAdapter.setData(imageList)
     }
 
     private fun observePreview(isPreview: Boolean) {
         this.isPreview = isPreview
-        binding.groupOption.isGone = isPreview
+        binding.groupPreview.isGone = isPreview
     }
 
-    private fun observeFileDelete(isDelete: Boolean?) {
-        if (isDelete != null && viewPageAdapter != null) {
-            if (isDelete) {
-                binding.viewLoading.root.isGone = true
-                removeImage()
-            }
+    override fun initUi() {
+        binding.viewPager.apply {
+            adapter = imagePreviewAdapter
+            val layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            val snapHelper: SnapHelper = PagerSnapHelper()
+            this.layoutManager = layoutManager
+            snapHelper.attachToRecyclerView(this)
+            scrollToPosition(navArgs.position)
         }
-    }
-
-    private fun observeImageState(imageState: ImageState) {
-        when (imageState) {
-            is ImageState.Error -> {}
-            ImageState.IDLE -> {}
-            ImageState.Loading -> binding.viewLoading.root.isVisible = true
-            is ImageState.Success -> {
-                binding.viewLoading.root.isGone = true
-                removeImage()
-            }
-        }
-    }
-
-    private fun removeImage() {
-        val deletePosition = selectedPosition
-        when {
-            viewPageAdapter!!.itemCount == 1 -> viewModel.navigateBack()
-            selectedPosition == 0 -> binding.viewPager.currentItem = 1
-            else -> binding.viewPager.currentItem = selectedPosition - 1
-        }
-        listImage.removeAt(deletePosition)
-        listDelete.add(deletePosition)
-        shareViewModel.setRemovePosition(deletePosition)
     }
 
     override fun initListener() {
@@ -135,50 +94,41 @@ class ImagePreviewFragment : BaseFragment() {
             imgBack.setOnClickListener {
                 viewModel.navigateBack()
             }
-            tvRestore.setOnClickListener {
-                listImageViewModel.moveImage(
-                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).absolutePath,
-                    listOf(navArgs.listImage[binding.viewPager.currentItem])
-                )
-            }
-            imgPreview.setOnClickListener {
-                isPreview = !isPreview
-                shareViewModel.setPreview(isPreview)
-            }
-            imgRotate.setOnClickListener {
-                deg += 90f
-                shareViewModel.setDeg(deg)
-            }
-            imgShare.setOnClickListener {
-                shareViewModel.shareImage(navArgs.listImage[selectedPosition].path)
-            }
+            imgShare.setOnClickListener {  }
             imgDelete.setOnClickListener {
-                onDeleteImageListener()
+                onDeleteListener()
             }
+            viewPager.addOnScrollListener(object : CustomScrollListener() {
+                override fun onStartScroll() {
+                    //initViewPaper()
+                }
+            })
+        }
+        imagePreviewAdapter.onClickItemListener = { position, view ->
+            isPreview = !isPreview
+            sharedViewModel.setPreview(isPreview)
         }
     }
 
-    private fun onDeleteImageListener() {
+    private fun onDeleteListener() {
         val deleteDialog = DialogDelete.newInstance()
         if (!deleteDialog.isShown) {
-            deleteDialog.show(childFragmentManager, "")
+            deleteDialog.show(childFragmentManager, DialogDelete.TAG)
         }
         deleteDialog.onConfirmListener = {
-            binding.viewLoading.root.isVisible = true
-            viewModel.deleteImage(navArgs.listImage[selectedPosition].path)
+            val position = binding.viewPager.getCurrentPosition()
+            File(imageList[position].path).delete()
+            imagePreviewAdapter.removeItem(position)
+            sharedViewModel.deleteImage(position)
         }
     }
 
-    private val callback: ViewPager2.OnPageChangeCallback =
-        object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                if (listDelete.contains(position)) {
-                    selectedPosition = position + 1
-                    binding.viewPager.currentItem = position + 1
-                } else {
-                    selectedPosition = position
-                    binding.viewPager.currentItem = position
-                }
-            }
+
+    companion object {
+
+        @JvmStatic
+        fun newInstance() = MediaFragment().apply {
+            arguments = bundleOf()
         }
+    }
 }

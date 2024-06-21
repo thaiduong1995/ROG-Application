@@ -13,19 +13,13 @@ import kotlinx.coroutines.launch
 
 abstract class BaseViewModel : ViewModel() {
 
+    abstract val TAG: String
+
     private val _navigationFlow: MutableStateFlow<NavigationCommand?> = MutableStateFlow(null)
     val navigationFlow: StateFlow<NavigationCommand?> = _navigationFlow
 
-    private val _bundleSaveFlow: MutableStateFlow<Bundle?> = MutableStateFlow(null)
-    val bundleSaveFlow: StateFlow<Bundle?> = _bundleSaveFlow
-
-    private val _listImageSelectedFlow: MutableStateFlow<List<Image>> = MutableStateFlow(listOf())
-    val listImageSelectedFlow: StateFlow<List<Image>> = _listImageSelectedFlow
-
     fun navigate(navDirections: NavDirections) {
-        viewModelScope.launch(Dispatchers.IO) {
-            _navigationFlow.value = NavigationCommand.ToDirection(navDirections)
-        }
+        _navigationFlow.value = NavigationCommand.ToDirection(navDirections)
     }
 
     fun navigateBack() {
@@ -35,20 +29,6 @@ abstract class BaseViewModel : ViewModel() {
     }
 
     open fun clearData() {
-        viewModelScope.launch(Dispatchers.IO) {
-            _navigationFlow.value = null
-        }
-    }
-
-    fun savedInstanceState(bundle: Bundle) {
-        viewModelScope.launch(Dispatchers.IO) {
-            _bundleSaveFlow.value = bundle
-        }
-    }
-
-    fun setListImageSelected(listImage: List<Image>) {
-        viewModelScope.launch(Dispatchers.IO) {
-            _listImageSelectedFlow.value = listImage
-        }
+        _navigationFlow.value = null
     }
 }

@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +14,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.os.bundleOf
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -21,25 +23,31 @@ import com.duong.my_app.R
 import com.duong.my_app.base.BaseFragment
 import com.duong.my_app.data.model.AppData
 import com.duong.my_app.data.reponse.AppState
+import com.duong.my_app.data.reponse.ProgressBarState
 import com.duong.my_app.databinding.FragmentAppManagerBinding
 import com.duong.my_app.extension.requestManagerApp
 import com.duong.my_app.ui.adapter.AppAdapter
 import com.duong.my_app.utls.rcv.addItemDecoration
 import com.duong.my_app.vm.AppManagerViewModel
+import com.duong.my_app.vm.SharedViewModel
 import kotlinx.coroutines.launch
 
 class AppManagerFragment : BaseFragment() {
 
     override val viewModel by viewModels<AppManagerViewModel>()
+    override val TAG = "AppManagerFragment"
 
-    private lateinit var binding: FragmentAppManagerBinding
+    private var _binding: FragmentAppManagerBinding? = null
+    private val binding get() = _binding!!
+    private val sharedViewModel by activityViewModels<SharedViewModel>()
+
     private val appAdapter = AppAdapter()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentAppManagerBinding.inflate(inflater, container, false)
+        _binding = FragmentAppManagerBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -62,12 +70,15 @@ class AppManagerFragment : BaseFragment() {
     }
 
     private fun observeListApp(appState: AppState) {
+        Log.d("ProgressBarState", "$TAG - $appState")
         when (appState) {
             is AppState.Error -> {}
             AppState.IDLE -> {}
-            AppState.Loading -> binding.viewLoading.root.isVisible = true
+            AppState.Loading -> {
+                sharedViewModel.setProgressBarState(ProgressBarState.LoadingData)
+            }
             is AppState.Success -> {
-                binding.viewLoading.root.isGone = true
+                sharedViewModel.setProgressBarState(ProgressBarState.Idle)
                 appAdapter.setData(appState.listApp)
             }
         }
@@ -136,6 +147,11 @@ class AppManagerFragment : BaseFragment() {
                 }
             }
         }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 
     companion object {
 
