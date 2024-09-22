@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/previewFragment"
-        android:name="com.duong.my_app.ui.fragment.PreviewFragment"
+        android:name="com.duong.rog.ui.fragment.PreviewFragment"
         android:label="PreviewFragment">
 
         <action
@@ -24,7 +24,7 @@
 
     <fragment
         android:id="@+id/mainFragment"
-        android:name="com.duong.my_app.ui.fragment.MainFragment"
+        android:name="com.duong.rog.ui.fragment.MainFragment"
         android:label="fragment_main"
         tools:layout="@layout/fragment_main">
 
@@ -36,12 +36,12 @@
 
     <fragment
         android:id="@+id/imagePreviewFragment"
-        android:name="com.duong.my_app.ui.fragment.ImagePreviewFragment"
+        android:name="com.duong.rog.ui.fragment.ImagePreviewFragment"
         android:label="ImagePreviewFragment">
 
         <argument
             android:name="imageList"
-            app:argType="com.duong.my_app.data.model.Image[]" />
+            app:argType="com.duong.rog.data.model.Image[]" />
 
         <argument
             android:name="position"

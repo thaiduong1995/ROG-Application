@@ -5,14 +5,15 @@ plugins {
     alias(libs.plugins.daggerHilt)
     alias(libs.plugins.navigationSaf)
     alias(libs.plugins.parcelize)
+    alias(libs.plugins.ksp)
 }
 
 android {
-    namespace = "com.duong.my_app"
+    namespace = "com.duong.rog"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.duong.my_app"
+        applicationId = "com.duong.rog"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -39,6 +40,7 @@ android {
     }
     kotlinOptions {
         jvmTarget = "1.8"
+        languageVersion = "1.9"
     }
     buildFeatures {
         viewBinding = true
@@ -56,24 +58,26 @@ android {
 }
 
 dependencies {
+    implementation(libs.legacy.support.v4)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)
 
     implementation(libs.hilt.android)
-    implementation(libs.legacy.support.v4)
+    kapt(libs.hilt.android.compiler)
+
     implementation(libs.lifecycle.livedata.ktx)
     implementation(libs.lifecycle.viewmodel.ktx)
     implementation(libs.fragment.ktx)
-    kapt(libs.hilt.android.compiler)
 
     implementation(libs.navigation.fragment.ktx)
     implementation(libs.navigation.ui.ktx)
 
     implementation(libs.room.ktx)
-    kapt(libs.room.compiler)
+    ksp(libs.room.compiler)
 
     implementation(libs.datastore.preferences)
+    
     implementation(libs.glide)
     implementation(libs.lottie)
 }

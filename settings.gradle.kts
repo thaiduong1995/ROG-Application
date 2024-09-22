@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "My Theme"
+rootProject.name = "ROG Application"
 include(":app")
  

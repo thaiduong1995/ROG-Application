@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:background="@color/purple030330">
 
-    <com.duong.my_app.ui.custom.bottombar.BottomItemLayout
+    <com.duong.rog.ui.custom.bottombar.BottomItemLayout
         android:id="@+id/tabTheme"
         android:layout_width="@dimen/size_0"
         android:layout_height="wrap_content"
@@ -14,7 +14,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.duong.my_app.ui.custom.bottombar.BottomItemLayout
+    <com.duong.rog.ui.custom.bottombar.BottomItemLayout
         android:id="@+id/tabAppManager"
         android:layout_width="@dimen/size_0"
         android:layout_height="wrap_content"
@@ -23,7 +23,7 @@
         app:layout_constraintStart_toEndOf="@id/tabTheme"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.duong.my_app.ui.custom.bottombar.BottomItemLayout
+    <com.duong.rog.ui.custom.bottombar.BottomItemLayout
         android:id="@+id/tabFolder"
         android:layout_width="@dimen/size_0"
         android:layout_height="wrap_content"

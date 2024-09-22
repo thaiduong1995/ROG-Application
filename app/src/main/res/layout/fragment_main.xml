@@ -35,7 +35,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintWidth_percent="0.5" />
 
-    <com.duong.my_app.ui.custom.bottombar.BottomNavigation
+    <com.duong.rog.ui.custom.bottombar.BottomNavigation
         android:id="@+id/bottomNavView"
         android:layout_width="@dimen/size_0"
         android:layout_height="@dimen/size_70"

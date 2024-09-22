@@ -6,4 +6,5 @@ plugins {
     alias(libs.plugins.daggerHilt) apply false
     alias(libs.plugins.navigationSaf) apply false
     alias(libs.plugins.parcelize) apply false
+    alias(libs.plugins.ksp) apply false
 }

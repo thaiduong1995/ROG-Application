@@ -31,7 +31,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MyGame"
-        android:name=".MyApplication"
+        android:name=".ROGApp"
         tools:targetApi="34">
 
         <activity
@@ -46,8 +46,8 @@
         </activity>
 
         <provider
-            android:name=".povider.VideoProvider"
-            android:authorities="com.duong.my_app"
+            android:name=".provider.VideoProvider"
+            android:authorities="com.duong.rog"
             android:exported="true"
             android:grantUriPermissions="true" />
 
@@ -77,7 +77,7 @@
         <!-- make sure within the application tag, otherwise app will crash with XmlResourceParser errors -->
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId}.provider"
+            android:authorities="${applicationId}.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.duong.my_app.photoview.PhotoView
+    <com.duong.rog.photoview.PhotoView
         android:id="@+id/photoView"
         android:layout_width="@dimen/size_0"
         android:layout_height="@dimen/size_0"
