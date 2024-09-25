@@ -3,7 +3,7 @@ package com.duong.rog.vm
 import android.content.Context
 import androidx.lifecycle.viewModelScope
 import com.duong.rog.base.BaseViewModel
-import com.duong.rog.data.database.MyThemeRepository
+import com.duong.rog.data.database.ROGRepository
 import com.duong.rog.data.model.Image
 import com.duong.rog.ui.fragment.MainFragmentDirections
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,7 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ImageViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val repository: MyThemeRepository
+    private val repository: ROGRepository
 ) : BaseViewModel() {
 
     override val TAG = "ListImageViewModel"

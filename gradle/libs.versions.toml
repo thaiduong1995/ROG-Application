@@ -1,18 +1,18 @@
 [versions]
-agp = "8.6.0"
-kotlin = "1.9.23"
+agp = "8.6.1"
+kotlin = "2.0.0"
 coreKtx = "1.13.1"
-lifecycleKtx = "2.8.4"
-fragmentKtx = "1.8.2"
+lifecycleKtx = "2.8.6"
+fragmentKtx = "1.8.3"
 hiltAndroid = "2.51.1"
-navigationKtx = "2.7.7"
+navigationKtx = "2.8.1"
 glide = "4.16.0"
-lottie = "6.1.0"
+lottie = "6.4.0"
 datastorePreferences = "1.1.1"
 room = "2.6.1"
 legacySupportV4 = "1.0.0"
-parcelize = "2.0.0-RC1"
-ksp = "1.5.30-1.0.0"
+parcelize = "2.0.0"
+ksp = "2.0.0-1.0.22"
 
 [libraries]
 legacy-support-v4 = { group = "androidx.legacy", name = "legacy-support-v4", version.ref = "legacySupportV4" }

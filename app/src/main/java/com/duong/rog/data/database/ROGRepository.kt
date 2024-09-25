@@ -14,7 +14,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class MyThemeRepository @Inject constructor(
+class ROGRepository @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
     suspend fun removePreview(firstInstallState: Int) {

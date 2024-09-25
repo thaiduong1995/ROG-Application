@@ -2,7 +2,7 @@ package com.duong.rog.vm
 
 import androidx.lifecycle.viewModelScope
 import com.duong.rog.base.BaseViewModel
-import com.duong.rog.data.database.MyThemeRepository
+import com.duong.rog.data.database.ROGRepository
 import com.duong.rog.ui.fragment.PreviewFragmentDirections
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PreviewViewModel @Inject constructor(
-    private val repository: MyThemeRepository
+    private val repository: ROGRepository
 ) : BaseViewModel() {
 
     override val TAG = "PreviewViewModel"

@@ -1,18 +1,12 @@
 package com.duong.rog.base
 
-import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.provider.Settings
 import android.view.View
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
-import com.duong.rog.R
 import com.duong.rog.data.reponse.NavigationCommand
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -42,7 +36,7 @@ abstract class BaseFragment : Fragment() {
         }
     }
 
-    private fun handleNavigation(navCommand: NavigationCommand?) {
+    private fun handleNavigation(navCommand: NavigationCommand) {
         when (navCommand) {
             NavigationCommand.ToBack -> findNavController().navigateUp()
             is NavigationCommand.ToDirection -> {
@@ -52,8 +46,7 @@ abstract class BaseFragment : Fragment() {
                     viewModel.navigateBack()
                 }
             }
-
-            null -> {}
+            NavigationCommand.Idle -> {}
         }
     }
 

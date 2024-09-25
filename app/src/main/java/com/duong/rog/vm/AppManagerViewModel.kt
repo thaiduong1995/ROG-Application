@@ -12,7 +12,7 @@ import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.duong.rog.IPackageStatsObserver
 import com.duong.rog.base.BaseViewModel
-import com.duong.rog.data.database.MyThemeRepository
+import com.duong.rog.data.database.ROGRepository
 import com.duong.rog.data.model.AppData
 import com.duong.rog.data.reponse.AppState
 import com.duong.rog.extension.readableFileSize
@@ -29,7 +29,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AppManagerViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val repository: MyThemeRepository
+    private val repository: ROGRepository
 ) : BaseViewModel() {
 
     override val TAG = "AppManagerViewModel"

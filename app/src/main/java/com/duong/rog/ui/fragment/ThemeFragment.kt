@@ -34,7 +34,6 @@ import kotlinx.coroutines.launch
 class ThemeFragment : BaseFragment() {
 
     override val viewModel by viewModels<ThemeViewModel>()
-    override val TAG = "ThemeFragment"
 
     private var _binding: FragmentThemeBinding? = null
     private val binding get() = _binding!!
@@ -181,6 +180,7 @@ class ThemeFragment : BaseFragment() {
         }
 
     companion object {
+        const val TAG = "ThemeFragment"
 
         @JvmStatic
         fun newInstance() = ThemeFragment().apply {

@@ -7,7 +7,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import androidx.lifecycle.viewModelScope
 import com.duong.rog.base.BaseViewModel
-import com.duong.rog.data.database.MyThemeRepository
+import com.duong.rog.data.database.ROGRepository
 import com.duong.rog.data.model.Image
 import com.duong.rog.data.model.Video
 import com.duong.rog.data.reponse.ImageState
@@ -26,7 +26,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SharedViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val repository: MyThemeRepository
+    private val repository: ROGRepository
 ) : BaseViewModel() {
 
     override val TAG = "ShareViewModel"

@@ -1,7 +1,7 @@
 package com.duong.rog.di
 
 import android.content.Context
-import com.duong.rog.data.database.MyThemeRepository
+import com.duong.rog.data.database.ROGRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,7 +22,7 @@ class AppModule {
     @Singleton
     fun provideRepository(
         @ApplicationContext context: Context,
-    ): MyThemeRepository {
-        return MyThemeRepository(context)
+    ): ROGRepository {
+        return ROGRepository(context)
     }
 }
